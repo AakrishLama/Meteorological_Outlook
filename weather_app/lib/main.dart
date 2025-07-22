@@ -1,39 +1,89 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const MyWidget());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyWidget extends StatefulWidget {
+  const MyWidget({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<MyWidget> createState() => _MyWidgetState();
+}
+
+class _MyWidgetState extends State<MyWidget> {
+  String? locationMessage;
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   getCurrentLocation();
+  // }
+
+  Future<void> getCurrentLocation() async {
+    print("getCurrentLocation method started");
+    try {
+      // Request location permission
+      PermissionStatus permissionStatus = await Permission.location.request();
+
+      if (permissionStatus.isGranted) {
+        // Check if location services are enabled
+        bool isLocationEnabled = await Geolocator.isLocationServiceEnabled();
+        if (!isLocationEnabled) {
+          setState(() {
+            locationMessage = "Location services are disabled";
+          });
+          return;
+        }
+
+        // Get current position
+        Position position = await Geolocator.getCurrentPosition(
+          // ignore: deprecated_member_use
+          desiredAccuracy: LocationAccuracy.high,
+        );
+        print(position ?? "Position is null");
+
+        setState(() {
+          locationMessage =
+              "Latitude: ${position.latitude}, Longitude: ${position.longitude}";
+          // print(locationMessage);
+        });
+      } else {
+        setState(() {
+          locationMessage = "Permission denied in the processing for time";
+        });
+      }
+    } catch (e) {
+      setState(() {
+        locationMessage = "Error getting location: ${e.toString()}";
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue),
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Flutter Demo Home Page.'),
+          title: const Text('Flutter Demo Home Page'),
           backgroundColor: Colors.amber,
         ),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Text('hello this is my application with first commit.'),
+            children: [
+              Text(locationMessage ?? "Fetching location..."),
+              ElevatedButton(
+                onPressed: (){
+                  print("refresh button pressed");
+                  getCurrentLocation();
+                },
+                child: const Text("Refresh Location"),
+              ),
             ],
           ),
         ),
