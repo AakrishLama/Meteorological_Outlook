@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
-import "getLocation.dart";
+import "Screens/getLocation.dart";
 import "package:go_router/go_router.dart";
-import "weather.dart";
+import "Screens/weather.dart";
+import "Screens/about.dart";
 
 void main() {
   final goRouter = GoRouter(
@@ -13,8 +14,9 @@ void main() {
           final lat = double.tryParse(state.uri.queryParameters['latitude']?? "");
           final lon = double.tryParse(state.uri.queryParameters['longitude']?? "");
           return Weather(latitude: lat, longitude: lon);
-      } 
-      ),  
+      },
+      ),
+      GoRoute(path: "/about", builder:(context, state)=> const About()),  
     ],
   );
   runApp(MyWidget(goRouter: goRouter));
