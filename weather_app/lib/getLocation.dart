@@ -57,11 +57,15 @@ class _MyLocationState extends State<MyLocation> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title:  Text("Weather Info", style: TextStyle(
+        color: Colors.white,
+      )
+      ), backgroundColor: Colors.purple,
+      centerTitle: true,
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -77,7 +81,9 @@ class _MyLocationState extends State<MyLocation> {
             ElevatedButton(
               onPressed: () {
                 print("get weather info button pressed");
-                GoRouter.of(context).go("/weatherInfo?latitude=$latitude&longitude=$longitude");
+                GoRouter.of(
+                  context,
+                ).go("/weatherInfo?latitude=$latitude&longitude=$longitude");
               },
               child: const Text("Get Weather Info"),
             ),

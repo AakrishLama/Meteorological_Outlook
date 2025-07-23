@@ -9,7 +9,12 @@ void main() {
   final goRouter = GoRouter(
     routes: [
       GoRoute(path: "/", builder: (context, state) => const MyLocation()),
-      GoRoute(path: "/weatherInfo", builder: (context, state) =>  Weather()),
+      GoRoute(path: "/weatherInfo", builder: (context, state){
+          final lat = double.tryParse(state.uri.queryParameters['latitude']?? "");
+          final lon = double.tryParse(state.uri.queryParameters['longitude']?? "");
+          return Weather(latitude: lat, longitude: lon);
+      } 
+      ),  
     ],
   );
   runApp(MyWidget(goRouter: goRouter));
