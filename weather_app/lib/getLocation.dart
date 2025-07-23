@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:http/http.dart' as http;
 
 class MyLocation extends StatefulWidget {
   const MyLocation({super.key});
@@ -11,6 +12,10 @@ class MyLocation extends StatefulWidget {
 
 class _MyLocationState extends State<MyLocation> {
   String? locationMessage;
+  double? latitude;
+  double? longitude;
+  String? weatherInfo;
+  String? api = "2548a9dcb20e6e423be61093728b306d";
 
   Future<void> getCurrentLocation() async {
     print("getCurrentLocation method started");
@@ -33,13 +38,14 @@ class _MyLocationState extends State<MyLocation> {
           // ignore: deprecated_member_use
           desiredAccuracy: LocationAccuracy.high,
         );
-        print(position ?? "Position is null");
 
         setState(() {
-          locationMessage =
-              "Latitude: ${position.latitude}, Longitude: ${position.longitude}";
+          latitude = position.latitude;
+          longitude = position.longitude;
+          locationMessage = "Latitude: ${latitude}, Longitude: ${longitude}";
           // print(locationMessage);
         });
+        print("latitude: ${latitude}, mero longitude: ${longitude}");
       } else {
         setState(() {
           locationMessage = "Permission denied in the processing for time";
@@ -52,6 +58,28 @@ class _MyLocationState extends State<MyLocation> {
     }
   }
 
+  Future<void> getWeatherInfo() async {
+    if (latitude == null || longitude == null) {
+        weatherInfo = "coordinates not found";
+
+      return;
+    }
+    final url =
+        "https://api.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$longitude&appid=$api";
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      setState(() {
+        weatherInfo = response.body;
+      });
+    } else {
+      setState(() {
+        weatherInfo = "Error getting weather info";
+      });
+    }
+    print("weatherInfo: $weatherInfo (${weatherInfo.runtimeType})");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,7 +87,7 @@ class _MyLocationState extends State<MyLocation> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(locationMessage ?? "Fetching location..."),
+            Text(locationMessage ?? "Get the location by clicking the button"),
             ElevatedButton(
               onPressed: () {
                 print("refresh button pressed");
@@ -67,10 +95,16 @@ class _MyLocationState extends State<MyLocation> {
               },
               child: const Text("Refresh Location"),
             ),
+            ElevatedButton(
+              onPressed: () {
+                print("get weather info button pressed");
+                getWeatherInfo();
+              },
+              child: const Text("Get Weather Info"),
+            ),
           ],
         ),
       ),
-
     );
   }
 }
