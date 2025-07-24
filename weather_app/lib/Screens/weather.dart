@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
@@ -19,7 +20,8 @@ class _WeatherState extends ConsumerState<Weather> {
   // Weather Info to display in the ui.
   String? weatherInfo;
 
-  final String api = "2548a9dcb20e6e423be61093728b306d";
+  final String api = dotenv.env['API_KEY'] ?? '';
+
 
   @override
   void initState() {

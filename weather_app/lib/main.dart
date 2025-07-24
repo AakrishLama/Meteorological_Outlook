@@ -1,4 +1,7 @@
+import "dart:io";
+
 import 'package:flutter/material.dart';
+import "package:flutter_dotenv/flutter_dotenv.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -7,7 +10,11 @@ import "package:go_router/go_router.dart";
 import "Screens/weather.dart";
 import "Screens/about.dart";
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load();
+
+  // await dotenv.load(fileName: ".env");
   final goRouter = GoRouter(
     routes: [
       GoRoute(path: "/", builder: (context, state) => const MyLocation()),
@@ -20,6 +27,7 @@ void main() {
       GoRoute(path: "/about", builder: (context, state) => const About()),
     ],
   );
+
   runApp(ProviderScope(child: MyWidget(goRouter: goRouter)));
 }
 

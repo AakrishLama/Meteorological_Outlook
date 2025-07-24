@@ -26,13 +26,20 @@ class Footer extends ConsumerWidget {
         Row(
           children: [
             ElevatedButton(
+              onPressed:
+                   () => GoRouter.of(context).go("/")
+                  ,
+              child: Text("Home"),
+            ),
+            const SizedBox(width: 10),
+            ElevatedButton(
               onPressed: locationState.latitude != null && 
                       locationState.longitude != null
                   ?() {
                 print("get weather info button pressed");
                 GoRouter.of(context).go("/weatherInfo?");
               }: null,
-              child: const Text("Get Weather Info"),
+              child: const Text("Forecast"),
             ),
             const SizedBox(width: 10),
             ElevatedButton(

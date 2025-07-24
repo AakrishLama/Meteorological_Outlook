@@ -69,7 +69,7 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                           locationState.longitude != null
                       ? () => GoRouter.of(context).go("/weatherInfo")
                       : null,
-                  child: const Text("Get Weather Info"),
+                  child: const Text("Get Weather FOrecast"),
                 ),
               ],
             ),
