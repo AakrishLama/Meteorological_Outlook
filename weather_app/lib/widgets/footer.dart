@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:weather_app/Provider/Location_provider.dart';
 
 class Footer extends StatelessWidget {
-  final double? latitude;
-  final double? longitude;
+  // final double? latitude;
+  // final double? longitude;
 
-  const Footer({super.key, this.latitude, this.longitude});
+  // const Footer({super.key, this.latitude, this.longitude});
 
   @override
   Widget build(BuildContext context) {
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -26,7 +29,7 @@ class Footer extends StatelessWidget {
                 print("get weather info button pressed");
                 GoRouter.of(
                   context,
-                ).go("/weatherInfo?latitude=$latitude&longitude=$longitude");
+                ).go("/weatherInfo?");
               },
               child: const Text("Get Weather Info"),
             ),

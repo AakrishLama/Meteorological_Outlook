@@ -104,7 +104,7 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                   onPressed: () {
                     print("get weather info button pressed");
                     GoRouter.of(context).go(
-                      "/weatherInfo?latitude=$locationNotifier.latitude&longitude=$locationNotifier.longitude",
+                      "/weatherInfo",
                     );
                   },
                   child: const Text("Get Weather Info"),
@@ -118,7 +118,7 @@ class _MyLocationState extends ConsumerState<MyLocation> {
             bottom: 0,
             left: 0,
             right: 0,
-            child: Footer(latitude: locationNotifier.latitude, longitude: locationNotifier.longitude),
+            child: Footer(),
           ),
         ],
       ),
