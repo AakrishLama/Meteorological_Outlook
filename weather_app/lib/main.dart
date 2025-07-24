@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import "package:flutter_riverpod/flutter_riverpod.dart";
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import "Screens/getLocation.dart";
@@ -10,16 +11,22 @@ void main() {
   final goRouter = GoRouter(
     routes: [
       GoRoute(path: "/", builder: (context, state) => const MyLocation()),
-      GoRoute(path: "/weatherInfo", builder: (context, state){
-          final lat = double.tryParse(state.uri.queryParameters['latitude']?? "");
-          final lon = double.tryParse(state.uri.queryParameters['longitude']?? "");
+      GoRoute(
+        path: "/weatherInfo",
+        builder: (context, state) {
+          final lat = double.tryParse(
+            state.uri.queryParameters['latitude'] ?? "",
+          );
+          final lon = double.tryParse(
+            state.uri.queryParameters['longitude'] ?? "",
+          );
           return Weather(latitude: lat, longitude: lon);
-      },
+        },
       ),
-      GoRoute(path: "/about", builder:(context, state)=> const About()),  
+      GoRoute(path: "/about", builder: (context, state) => const About()),
     ],
   );
-  runApp(MyWidget(goRouter: goRouter));
+  runApp(ProviderScope(child: MyWidget(goRouter: goRouter)));
 }
 
 class MyWidget extends StatelessWidget {
