@@ -45,7 +45,7 @@ class _WeatherState extends ConsumerState<Weather> {
       // Test DNS first
       await InternetAddress.lookup('api.openweathermap.org');
 
-      final url = Uri.https('api.openweathermap.org', '/data/2.5/weather', {
+      final url = Uri.https('api.openweathermap.org', '/data/2.5/forecast', {
         'lat': lat.toString(),
         'lon': lon.toString(),
         'appid': dotenv.env['API_KEY'] ?? '',
@@ -84,23 +84,22 @@ class _WeatherState extends ConsumerState<Weather> {
         backgroundColor: Colors.purple,
         centerTitle: true,
       ),
-      body: Stack(
-        children: [
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(weatherInfo ?? "Loading..."),
-                ElevatedButton(
-                  onPressed: () => GoRouter.of(context).go("/"),
-                  child: const Text("Go back"),
-                ),
-              ],
+      body: Column(
+      children: [
+        Expanded( // Takes all available space between AppBar and Footer
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: Text(
+                weatherInfo ?? "Loading...",
+                style: TextStyle(fontSize: 16),
+              ),
             ),
           ),
-          Positioned(bottom: 0, left: 0, right: 0, child: Footer()),
-        ],
-      ),
+        ),
+         Footer(), // Now properly placed below scrollable content
+      ],
+    ),
     );
   }
 }

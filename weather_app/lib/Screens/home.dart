@@ -77,8 +77,8 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                     return Text(
                       """  
                       name: ${data['name']}, ${data['sys']['country']}
-                      description: ${data['weather'][0]['description']}
                       ${DateFormat.yMMMMEEEEd().format(DateTime.now())}
+                      description: ${data['weather'][0]['description']}
                       Temp: ${data['main']['temp'].toStringAsFixed(2)}
                           Humidity: ${data['main']['humidity'].toStringAsFixed(2)}
                           Pressure: ${data['main']['pressure'].toStringAsFixed(2)}
@@ -90,14 +90,14 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                   loading: () => const CircularProgressIndicator(),
                 ),
 
-                ElevatedButton(
-                  onPressed:
-                      locationState.latitude != null &&
-                          locationState.longitude != null
-                      ? () => GoRouter.of(context).go("/weatherInfo")
-                      : null,
-                  child: const Text(" Forecast"),
-                ),
+                // ElevatedButton(
+                //   onPressed:
+                //       locationState.latitude != null &&
+                //           locationState.longitude != null
+                //       ? () => GoRouter.of(context).go("/weatherInfo")
+                //       : null,
+                //   child: const Text(" Forecast"),
+                // ),
               ],
             ),
           ),
