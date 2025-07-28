@@ -1,9 +1,11 @@
+import "dart:convert";
+
 import "package:flutter_dotenv/flutter_dotenv.dart";
 import "package:http/http.dart" as http;
 import "package:riverpod/riverpod.dart";
 import "package:weather_app/Provider/Location_provider.dart";
 
-final weatherProvider = FutureProvider<String>((ref) async {
+final weatherProvider = FutureProvider<Map<String, dynamic>>((ref) async {
   try {
     final locationState = ref.watch(locationProvider);
     final lat = locationState.latitude;
@@ -21,7 +23,8 @@ final weatherProvider = FutureProvider<String>((ref) async {
     if (response.statusCode != 200) {
       throw Exception('API request failed: ${response.statusCode}');
     }
-    return response.body;
+    final jsonData = jsonDecode(response.body) as Map<String, dynamic>;
+    return jsonData;
   } catch (e) {
     throw Exception('error: $e');
   }

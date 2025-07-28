@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import "package:go_router/go_router.dart";
+import 'package:intl/intl.dart';
 import 'package:weather_app/Provider/Location_provider.dart';
 import 'package:weather_app/Provider/Weather.dart';
 import 'package:weather_app/widgets/footer.dart';
@@ -30,6 +31,7 @@ class _MyLocationState extends ConsumerState<MyLocation> {
   Widget build(BuildContext context) {
     final locationState = ref.watch(locationProvider);
     final weatherAsync = ref.watch(weatherProvider);
+    
 
     return Scaffold(
       appBar: AppBar(
@@ -67,7 +69,23 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                 ),
                 const SizedBox(height: 20),
                 weatherAsync.when(
-                  data: (data) => Text(data),
+                  data: (data) {
+                    if (data.isEmpty) {
+                      return const Text("No data");
+                    }
+                    print(data.runtimeType);
+                    return Text(
+                      """  
+                      name: ${data['name']}, ${data['sys']['country']}
+                      description: ${data['weather'][0]['description']}
+                      ${DateFormat.yMMMMEEEEd().format(DateTime.now())}
+                      Temp: ${data['main']['temp'].toStringAsFixed(2)}
+                          Humidity: ${data['main']['humidity'].toStringAsFixed(2)}
+                          Pressure: ${data['main']['pressure'].toStringAsFixed(2)}
+                          Wind Speed: ${data['wind']['speed'].toStringAsFixed(2)}
+                    """,
+                    );
+                  },
                   error: (error, stackTrace) => Text(error.toString()),
                   loading: () => const CircularProgressIndicator(),
                 ),
