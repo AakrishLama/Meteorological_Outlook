@@ -59,7 +59,7 @@ class _WeatherState extends ConsumerState<Weather> {
 
       setState(() {
         weatherInfo = response.body;
-        print(weatherInfo);
+        // print(weatherInfo);
       });
     } on SocketException catch (e) {
       setState(() {

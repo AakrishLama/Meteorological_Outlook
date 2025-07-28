@@ -71,9 +71,9 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                 weatherAsync.when(
                   data: (data) {
                     if (data.isEmpty) {
-                      return const Text("No data");
+                      return const Text("");
                     }
-                    print(data.runtimeType);
+                    // print(data.runtimeType); JSON now
                     return Text(
                       """  
                       name: ${data['name']}, ${data['sys']['country']}

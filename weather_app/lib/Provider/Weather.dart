@@ -12,7 +12,7 @@ final weatherProvider = FutureProvider<Map<String, dynamic>>((ref) async {
     final lon = locationState.longitude;
     print("lat: $lat, lon: $lon from weatherProvider");
     if (lat == null || lon == null) {
-      throw Exception('Coordinates not available');
+      return {};
     }
     final url = Uri.https('api.openweathermap.org', '/data/2.5/weather', {
       'lat': lat.toString(),
@@ -26,6 +26,6 @@ final weatherProvider = FutureProvider<Map<String, dynamic>>((ref) async {
     final jsonData = jsonDecode(response.body) as Map<String, dynamic>;
     return jsonData;
   } catch (e) {
-    throw Exception('error: $e');
+    throw Exception('Failed to fetch weather: $e');
   }
 });
