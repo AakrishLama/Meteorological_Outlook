@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,10 +9,12 @@ import 'package:weather_app/Provider/Location_provider.dart';
 import 'package:weather_app/widgets/footer.dart';
 
 class Weather extends ConsumerStatefulWidget {
-  final double? latitude;
-  final double? longitude;
+  const Weather({super.key});
 
-  const Weather({super.key, this.latitude, this.longitude});
+  // final double? latitude;
+  // final double? longitude;
+
+  // const Weather({super.key, this.latitude, this.longitude});
 
   @override
   ConsumerState<Weather> createState() => _WeatherState();
@@ -22,7 +26,6 @@ class _WeatherState extends ConsumerState<Weather> {
 
   final String api = dotenv.env['API_KEY'] ?? '';
 
-
   @override
   void initState() {
     super.initState();
@@ -30,36 +33,48 @@ class _WeatherState extends ConsumerState<Weather> {
   }
 
   Future<void> getWeatherInfo() async {
-    final locationState = ref.read(locationProvider);
-    final lat = locationState.latitude;
-    final lon = locationState.longitude;
+    try {
+      final locationState = ref.read(locationProvider);
+      final lat = locationState.latitude;
+      final lon = locationState.longitude;
 
-    // Check if latitude and longitude are null
-    if (lat == null || lon == null) {
-      setState(() {
-        weatherInfo = "Coordinates not found";
+      if (lat == null || lon == null) {
+        throw Exception('Coordinates not available');
+      }
+
+      // Test DNS first
+      await InternetAddress.lookup('api.openweathermap.org');
+
+      final url = Uri.https('api.openweathermap.org', '/data/2.5/weather', {
+        'lat': lat.toString(),
+        'lon': lon.toString(),
+        'appid': dotenv.env['API_KEY'] ?? '',
       });
-      return;
-    }
 
-    final url =
-        "https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=$api";
+      final response = await http.get(url).timeout(const Duration(seconds: 10));
 
-    final response = await http.get(Uri.parse(url));
-    if (response.statusCode == 200) {
+      if (response.statusCode != 200) {
+        throw Exception('API request failed: ${response.statusCode}');
+      }
+
       setState(() {
         weatherInfo = response.body;
+        print(weatherInfo);
       });
-    } else {
+    } on SocketException catch (e) {
       setState(() {
-        weatherInfo = "Error getting weather info";
+        weatherInfo = 'Network error: ${e.message}';
+      });
+    } catch (e) {
+      setState(() {
+        weatherInfo = 'Error: ${e.toString()}';
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final locationNotifier = ref.watch(locationProvider);
+    // final locationNotifier = ref.watch(locationProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text(
