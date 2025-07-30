@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geocoding/geocoding.dart';
 import "package:go_router/go_router.dart";
 import 'package:intl/intl.dart';
 import 'package:weather_app/Provider/Location_provider.dart';
@@ -16,12 +17,25 @@ class MyLocation extends ConsumerStatefulWidget {
 }
 
 class _MyLocationState extends ConsumerState<MyLocation> {
-  TextEditingController inputController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
   bool _isLoading = false;
+  String _output = "";
 
-  submit() {
-    inputController.clear();
-    print("submit");
+  void submit() async {
+    // print("submit");
+    try {
+      final location = await locationFromAddress(addressController.text);
+      setState(() {
+        _output = location.isNotEmpty
+            ? location[0].toString()
+            : 'No results found.';
+        addressController.clear();
+      });
+    } catch (e) {
+      setState(() {
+        _output = 'Error: $e';
+      });
+    }
   }
 
   void fetchGeoLocation() async {
@@ -35,11 +49,14 @@ class _MyLocationState extends ConsumerState<MyLocation> {
     }
   }
 
-  @override 
-  void initState(){
+  @override
+  void initState() {
+    super.initState();
     fetchGeoLocation();
   }
 
+
+  /// Build method for ui rendering.
   @override
   Widget build(BuildContext context) {
     final locationState = ref.watch(locationProvider);
@@ -53,28 +70,27 @@ class _MyLocationState extends ConsumerState<MyLocation> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Input(inputController: inputController, onSubmit: submit),
+                // input field for address from input widget.
+                Input(inputController: addressController, onSubmit: submit),
                 const SizedBox(height: 20),
+
+
+                if (_output != "") Text(_output),
+                const SizedBox(height: 20),
+
+                // condition check for loading location
                 if (_isLoading) const CircularProgressIndicator(),
                 if (locationState.locationMessage != null &&
                     locationState.latitude != null &&
                     locationState.longitude != null)
                   Column(
                     children: [
-                      Text(locationState.locationMessage!),
-                      // Text(
-                      //   "Lat: ${locationState.latitude!.toStringAsFixed(4)}",
-                      // ),
-                      // Text(
-                      //   "Long: ${locationState.longitude!.toStringAsFixed(4)}",
-                      // ),
+                      Text(locationState.locationMessage!), // location message
                     ],
                   ),
-                // ElevatedButton(
-                //   onPressed: fetchGeoLocation,
-                //   child: const Text("Get my GeoLocation"),
-                // ),
+
                 const SizedBox(height: 20),
+                // condition check for loading weather
                 weatherAsync.when(
                   data: (data) {
                     if (data.isEmpty) {
@@ -94,15 +110,6 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                   error: (error, stackTrace) => Text(error.toString()),
                   loading: () => const CircularProgressIndicator(),
                 ),
-
-                // ElevatedButton(
-                //   onPressed:
-                //       locationState.latitude != null &&
-                //           locationState.longitude != null
-                //       ? () => GoRouter.of(context).go("/weatherInfo")
-                //       : null,
-                //   child: const Text(" Forecast"),
-                // ),
               ],
             ),
           ),
