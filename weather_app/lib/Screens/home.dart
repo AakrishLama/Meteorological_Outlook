@@ -149,7 +149,7 @@ class _MyLocationState extends ConsumerState<MyLocation> {
               ],
             ),
           ),
-          Positioned(bottom: 0, left: 0, right: 0, child: Footer()),
+          Positioned(bottom: 0, left: 0, right: 0, child: Footer(inputLat, inputLong)),
         ],
       ),
     );

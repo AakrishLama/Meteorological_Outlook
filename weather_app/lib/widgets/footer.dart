@@ -4,6 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:weather_app/Provider/Location_provider.dart';
 
 class Footer extends ConsumerWidget {
+  final double? inputLat;
+  final double? inputLong;
+
+  const Footer(this.inputLat, this.inputLong, {super.key});
+
   // final double? latitude;
   // final double? longitude;
 
@@ -36,8 +41,8 @@ class Footer extends ConsumerWidget {
               onPressed: locationState.latitude != null && 
                       locationState.longitude != null
                   ?() {
-                print("get weather info button pressed");
-                GoRouter.of(context).go("/weatherInfo?");
+                GoRouter.of(context).go("/weatherInfo?latitude=${inputLat.toString()}&longitude=${inputLong.toString()}");
+                print("get weather info button pressed ${inputLat.toString()} ${inputLong.toString()}");
               }: null,
               child: const Text("Forecast"),
             ),

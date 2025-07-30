@@ -34,7 +34,7 @@ class About extends StatelessWidget {
             bottom: 0,
             left: 0,
             right: 0,
-            child: Footer(),
+            child: Footer(null, null),
           ),
         ],
       ),

@@ -21,7 +21,16 @@ Future<void> main() async {
       GoRoute(
         path: "/weatherInfo",
         builder: (context, state) {
-          return Weather();
+          final inputLatStr = state.uri.queryParameters['latitude'];
+          final inputLongStr = state.uri.queryParameters['longitude'];
+
+          final inputLat = inputLatStr != null
+              ? double.tryParse(inputLatStr)
+              : null;
+          final inputLong = inputLongStr != null
+              ? double.tryParse(inputLongStr)
+              : null;
+          return Weather(inputLat, inputLong);
         },
       ),
       GoRoute(path: "/about", builder: (context, state) => const About()),

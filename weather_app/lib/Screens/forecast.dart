@@ -12,7 +12,10 @@ import 'package:weather_app/widgets/appbar.dart';
 import 'package:weather_app/widgets/footer.dart';
 
 class Weather extends ConsumerStatefulWidget {
-  const Weather({super.key});
+  double? inputLat;
+  double? inputLong;
+
+  Weather(this.inputLat, this.inputLong, {super.key});
 
   // final double? latitude;
   // final double? longitude;
@@ -33,18 +36,22 @@ class _WeatherState extends ConsumerState<Weather> {
   void initState() {
     super.initState();
     getWeatherInfo();
+    print(widget.inputLat);
+    print(widget.inputLong);
   }
 
   Future<void> getWeatherInfo() async {
+    double? lat;
+    double? lon;
     try {
-      final locationState = ref.read(locationProvider);
-      final lat = locationState.latitude;
-      final lon = locationState.longitude;
-
-      if (lat == null || lon == null) {
-        throw Exception('Coordinates not available');
+      if (widget.inputLat != null || widget.inputLong != null) {
+        lat = widget.inputLat;
+        lon = widget.inputLong;
+      } else {
+        final locationState = ref.read(locationProvider);
+        lat = locationState.latitude;
+        lon = locationState.longitude;
       }
-
       // Test DNS first
       await InternetAddress.lookup('api.openweathermap.org');
 
@@ -78,7 +85,7 @@ class _WeatherState extends ConsumerState<Weather> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Appbar(heading: 'Forecast',),
+      appBar: Appbar(heading: 'Forecast'),
       body: weatherInfo == null
           ? const Center(child: CircularProgressIndicator())
           : Column(
@@ -175,7 +182,7 @@ class _WeatherState extends ConsumerState<Weather> {
                     },
                   ),
                 ),
-                Footer(),
+                Footer(null, null),
               ],
             ),
     );

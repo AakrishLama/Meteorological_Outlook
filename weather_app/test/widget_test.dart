@@ -10,7 +10,7 @@ void main() {
     final goRouter = GoRouter(
       routes: [
         GoRoute(path: "/", builder: (context, state) => const MyLocation()),
-        GoRoute(path: "/weatherInfo", builder: (context, state) =>  Weather()),
+        GoRoute(path: "/weatherInfo", builder: (context, state) =>  Weather( 0.0, 0.0)),
       ],
     );
 
