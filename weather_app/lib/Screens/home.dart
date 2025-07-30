@@ -23,17 +23,29 @@ class _MyLocationState extends ConsumerState<MyLocation> {
 
   void submit() async {
     // print("submit");
+    _isLoading = true;
     try {
+      if (addressController.text.trim().isEmpty) {
+        setState(() {
+          _output = 'Please enter an address.';
+          _isLoading = false;
+        });
+        return;
+      }
       final location = await locationFromAddress(addressController.text);
       setState(() {
-        _output = location.isNotEmpty
-            ? location[0].toString()
-            : 'No results found.';
+        if(location.isEmpty){
+          _output = "No results found";
+        }else{
+          _output = location[0].toString();
+        }
         addressController.clear();
+        _isLoading = false;
       });
     } catch (e) {
       setState(() {
         _output = 'Error: $e';
+        _isLoading = false;
       });
     }
   }
@@ -55,7 +67,6 @@ class _MyLocationState extends ConsumerState<MyLocation> {
     fetchGeoLocation();
   }
 
-
   /// Build method for ui rendering.
   @override
   Widget build(BuildContext context) {
@@ -74,21 +85,47 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                 Input(inputController: addressController, onSubmit: submit),
                 const SizedBox(height: 20),
 
-
-                if (_output != "") Text(_output),
-                const SizedBox(height: 20),
-
                 // condition check for loading location
-                if (_isLoading) const CircularProgressIndicator(),
-                if (locationState.locationMessage != null &&
-                    locationState.latitude != null &&
-                    locationState.longitude != null)
+                if (_isLoading)
+                  const CircularProgressIndicator()
+                else if (_output.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(_output, style: TextStyle(fontSize: 16)),
+                  )
+                // else if (locationState.locationMessage != null &&
+                //   locationState.latitude != null &&
+                //   locationState.longitude != null)
+                // Column(
+                //   children: [
+                //     Text(locationState.locationMessage!), // location message
+                //   ],
+                else
                   Column(
                     children: [
-                      Text(locationState.locationMessage!), // location message
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          locationState.locationMessage!,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
                     ],
                   ),
 
+                // if(_output.isEmpty)
+                //   if (_isLoading) const CircularProgressIndicator(),
+                // else if (_output.isNotEmpty) Text(_output),
+
+                // if (_isLoading) const CircularProgressIndicator(),
+                // if (locationState.locationMessage != null &&
+                //     locationState.latitude != null &&
+                //     locationState.longitude != null)
+                //   Column(
+                //     children: [
+                //       Text(locationState.locationMessage!), // location message
+                //     ],
+                //   ),
                 const SizedBox(height: 20),
                 // condition check for loading weather
                 weatherAsync.when(
@@ -105,6 +142,8 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                           Humidity: ${data['main']['humidity'].toStringAsFixed(2)}
                           Pressure: ${data['main']['pressure'].toStringAsFixed(2)}
                           Wind Speed: ${data['wind']['speed'].toStringAsFixed(2)}
+                          latitude: ${locationState.latitude}
+                          longitude: ${locationState.longitude}
                     """);
                   },
                   error: (error, stackTrace) => Text(error.toString()),
