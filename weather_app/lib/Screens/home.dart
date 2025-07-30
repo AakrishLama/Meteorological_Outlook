@@ -18,6 +18,8 @@ class MyLocation extends ConsumerStatefulWidget {
 
 class _MyLocationState extends ConsumerState<MyLocation> {
   TextEditingController addressController = TextEditingController();
+  double? inputLat;
+  double? inputLong;
   bool _isLoading = false;
   String _output = "";
 
@@ -32,12 +34,17 @@ class _MyLocationState extends ConsumerState<MyLocation> {
         });
         return;
       }
-      final location = await locationFromAddress(addressController.text);
+      final locations = await locationFromAddress(
+        addressController.text,
+      ); // returns list of locations
       setState(() {
-        if(location.isEmpty){
+        if (locations.isEmpty) {
           _output = "No results found";
-        }else{
-          _output = location[0].toString();
+        } else {
+          final location = locations[0];
+          inputLat = location.latitude;
+          inputLong = location.longitude;
+          _output = locations[0].toString();
         }
         addressController.clear();
         _isLoading = false;
@@ -71,7 +78,16 @@ class _MyLocationState extends ConsumerState<MyLocation> {
   @override
   Widget build(BuildContext context) {
     final locationState = ref.watch(locationProvider);
-    final weatherAsync = ref.watch(weatherProvider);
+    final weatherAsync = (inputLat != null && inputLong != null)
+        ? ref.watch(weatherProvider((inputLat!, inputLong!)))
+        : (locationState.latitude != null && locationState.longitude != null)
+        ? ref.watch(
+            weatherProvider((
+              locationState.latitude!,
+              locationState.longitude!,
+            )),
+          )
+        : const AsyncValue.loading();
 
     return Scaffold(
       appBar: Appbar(heading: 'Home'),
@@ -81,7 +97,7 @@ class _MyLocationState extends ConsumerState<MyLocation> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // input field for address from input widget.
+                // Input field for address from input widget.
                 Input(inputController: addressController, onSubmit: submit),
                 const SizedBox(height: 20),
 
@@ -93,13 +109,6 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                     padding: const EdgeInsets.all(8.0),
                     child: Text(_output, style: TextStyle(fontSize: 16)),
                   )
-                // else if (locationState.locationMessage != null &&
-                //   locationState.latitude != null &&
-                //   locationState.longitude != null)
-                // Column(
-                //   children: [
-                //     Text(locationState.locationMessage!), // location message
-                //   ],
                 else
                   Column(
                     children: [
@@ -113,20 +122,8 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                     ],
                   ),
 
-                // if(_output.isEmpty)
-                //   if (_isLoading) const CircularProgressIndicator(),
-                // else if (_output.isNotEmpty) Text(_output),
-
-                // if (_isLoading) const CircularProgressIndicator(),
-                // if (locationState.locationMessage != null &&
-                //     locationState.latitude != null &&
-                //     locationState.longitude != null)
-                //   Column(
-                //     children: [
-                //       Text(locationState.locationMessage!), // location message
-                //     ],
-                //   ),
                 const SizedBox(height: 20),
+
                 // condition check for loading weather
                 weatherAsync.when(
                   data: (data) {

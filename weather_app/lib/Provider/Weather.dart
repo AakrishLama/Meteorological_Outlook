@@ -5,18 +5,16 @@ import "package:http/http.dart" as http;
 import "package:riverpod/riverpod.dart";
 import "package:weather_app/Provider/Location_provider.dart";
 
-final weatherProvider = FutureProvider<Map<String, dynamic>>((ref) async {
+final weatherProvider = FutureProvider.family<Map<String, dynamic>, (double lat, double lon)>((ref, coords) async {
+  final inputLat = coords.$1;
+  final inputLon = coords.$2;
   try {
-    final locationState = ref.watch(locationProvider);
-    final lat = locationState.latitude;
-    final lon = locationState.longitude;
-    print("lat: $lat, lon: $lon from weatherProvider");
-    if (lat == null || lon == null) {
+    if (inputLat == null || inputLon == null) {
       return {};
     }
     final url = Uri.https('api.openweathermap.org', '/data/2.5/weather', {
-      'lat': lat.toString(),
-      'lon': lon.toString(),
+      'lat': inputLat.toString(),
+      'lon': inputLon.toString(),
       'appid': dotenv.env['API_KEY'] ?? '',
     });
     final response = await http.get(url).timeout(const Duration(seconds: 10));
