@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:weather_app/widgets/appbar.dart';
 import 'package:weather_app/widgets/footer.dart';
 import "package:go_router/go_router.dart";
 
@@ -8,11 +9,7 @@ class About extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("About", style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.purple,
-        centerTitle: true,
-      ),
+      appBar: Appbar(heading: 'About',),
       body: Stack(
         children: [
           SingleChildScrollView(

@@ -4,6 +4,7 @@ import "package:go_router/go_router.dart";
 import 'package:intl/intl.dart';
 import 'package:weather_app/Provider/Location_provider.dart';
 import 'package:weather_app/Provider/Weather.dart';
+import 'package:weather_app/widgets/appbar.dart';
 import 'package:weather_app/widgets/footer.dart';
 
 class MyLocation extends ConsumerStatefulWidget {
@@ -31,17 +32,9 @@ class _MyLocationState extends ConsumerState<MyLocation> {
   Widget build(BuildContext context) {
     final locationState = ref.watch(locationProvider);
     final weatherAsync = ref.watch(weatherProvider);
-    
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Weather Info",
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: Colors.purple,
-        centerTitle: true,
-      ),
+      appBar: Appbar(heading: 'Home',),
       body: Stack(
         children: [
           Center(
@@ -74,8 +67,7 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                       return const Text("");
                     }
                     // print(data.runtimeType); JSON now
-                    return Text(
-                      """  
+                    return Text("""  
                       name: ${data['name']}, ${data['sys']['country']}
                       ${DateFormat.yMMMMEEEEd().format(DateTime.now())}
                       description: ${data['weather'][0]['description']}
@@ -83,8 +75,7 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                           Humidity: ${data['main']['humidity'].toStringAsFixed(2)}
                           Pressure: ${data['main']['pressure'].toStringAsFixed(2)}
                           Wind Speed: ${data['wind']['speed'].toStringAsFixed(2)}
-                    """,
-                    );
+                    """);
                   },
                   error: (error, stackTrace) => Text(error.toString()),
                   loading: () => const CircularProgressIndicator(),

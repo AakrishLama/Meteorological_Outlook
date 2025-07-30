@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:weather_app/Provider/Location_provider.dart';
+import 'package:weather_app/widgets/appbar.dart';
 import 'package:weather_app/widgets/footer.dart';
 
 class Weather extends ConsumerStatefulWidget {
@@ -74,101 +75,109 @@ class _WeatherState extends ConsumerState<Weather> {
     }
   }
 
- @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: const Text(
-        "Weather Forecast",
-        style: TextStyle(color: Colors.white),
-      ),
-      backgroundColor: Colors.purple,
-      centerTitle: true,
-    ),
-    body: weatherInfo == null
-        ? const Center(child: CircularProgressIndicator())
-        : Column(
-            children: [
-              Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(8),
-                  itemCount: 5, // Show 5 days
-                  itemBuilder: (context, dayIndex) {
-                    // Parse your JSON data here
-                    final jsonData = jsonDecode(weatherInfo!);
-                    final forecasts = jsonData['list'] as List;
-                    
-                    // Get forecasts for this day (8 forecasts per day)
-                    final dayForecasts = forecasts.skip(dayIndex * 8).take(8).toList();
-                    
-                    return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              DateFormat('EEEE, MMM d').format(
-                                DateTime.parse(dayForecasts.first['dt_txt']),
-                              ),
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            SizedBox(
-                              height: 120,
-                              child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: dayForecasts.length,
-                                itemBuilder: (context, index) {
-                                  final forecast = dayForecasts[index];
-                                  final time = DateTime.parse(forecast['dt_txt']);
-                                  final temp = forecast['main']['temp'];
-                                  final weather = forecast['weather'][0];
-                                  
-                                  return Container(
-                                    width: 80,
-                                    padding: const EdgeInsets.all(8),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                      children: [
-                                        Text(
-                                          DateFormat('HH:mm').format(time),
-                                          style: const TextStyle(fontSize: 12),
-                                        ),
-                                        Image.network(
-                                          'https://openweathermap.org/img/wn/${weather['icon']}@2x.png',
-                                          width: 40,
-                                          height: 40,
-                                        ),
-                                        Text(
-                                          '${(temp - 273.15).toStringAsFixed(1)}°C',
-                                          style: const TextStyle(fontSize: 14),
-                                        ),
-                                        Text(
-                                          weather['description'],
-                                          style: const TextStyle(fontSize: 10),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: Appbar(heading: 'Forecast',),
+      body: weatherInfo == null
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(8),
+                    itemCount: 5, // Show 5 days
+                    itemBuilder: (context, dayIndex) {
+                      // Parse your JSON data here
+                      final jsonData = jsonDecode(weatherInfo!);
+                      final forecasts = jsonData['list'] as List;
+
+                      // Get forecasts for this day (8 forecasts per day)
+                      final dayForecasts = forecasts
+                          .skip(dayIndex * 8)
+                          .take(8)
+                          .toList();
+
+                      return Card(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 16,
                         ),
-                      ),
-                    );
-                  },
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                DateFormat('EEEE, MMM d').format(
+                                  DateTime.parse(dayForecasts.first['dt_txt']),
+                                ),
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              SizedBox(
+                                height: 120,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: dayForecasts.length,
+                                  itemBuilder: (context, index) {
+                                    final forecast = dayForecasts[index];
+                                    final time = DateTime.parse(
+                                      forecast['dt_txt'],
+                                    );
+                                    final temp = forecast['main']['temp'];
+                                    final weather = forecast['weather'][0];
+
+                                    return Container(
+                                      width: 80,
+                                      padding: const EdgeInsets.all(8),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Text(
+                                            DateFormat('HH:mm').format(time),
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                          Image.network(
+                                            'https://openweathermap.org/img/wn/${weather['icon']}@2x.png',
+                                            width: 40,
+                                            height: 40,
+                                          ),
+                                          Text(
+                                            '${(temp - 273.15).toStringAsFixed(1)}°C',
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                          Text(
+                                            weather['description'],
+                                            style: const TextStyle(
+                                              fontSize: 10,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
-               Footer(),
-            ],
-          ),
-  );
-}
+                Footer(),
+              ],
+            ),
+    );
+  }
 }
