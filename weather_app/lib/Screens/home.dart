@@ -4,6 +4,7 @@ import "package:go_router/go_router.dart";
 import 'package:intl/intl.dart';
 import 'package:weather_app/Provider/Location_provider.dart';
 import 'package:weather_app/Provider/Weather.dart';
+import 'package:weather_app/widgets/input.dart';
 import 'package:weather_app/widgets/appbar.dart';
 import 'package:weather_app/widgets/footer.dart';
 
@@ -15,7 +16,13 @@ class MyLocation extends ConsumerStatefulWidget {
 }
 
 class _MyLocationState extends ConsumerState<MyLocation> {
+  TextEditingController inputController = TextEditingController();
   bool _isLoading = false;
+
+  submit() {
+    inputController.clear();
+    print("submit");
+  }
 
   void fetchGeoLocation() async {
     setState(() => _isLoading = true);
@@ -28,19 +35,26 @@ class _MyLocationState extends ConsumerState<MyLocation> {
     }
   }
 
+  @override 
+  void initState(){
+    fetchGeoLocation();
+  }
+
   @override
   Widget build(BuildContext context) {
     final locationState = ref.watch(locationProvider);
     final weatherAsync = ref.watch(weatherProvider);
 
     return Scaffold(
-      appBar: Appbar(heading: 'Home',),
+      appBar: Appbar(heading: 'Home'),
       body: Stack(
         children: [
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                Input(inputController: inputController, onSubmit: submit),
+                const SizedBox(height: 20),
                 if (_isLoading) const CircularProgressIndicator(),
                 if (locationState.locationMessage != null &&
                     locationState.latitude != null &&
@@ -48,18 +62,18 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                   Column(
                     children: [
                       Text(locationState.locationMessage!),
-                      Text(
-                        "Lat: ${locationState.latitude!.toStringAsFixed(4)}",
-                      ),
-                      Text(
-                        "Long: ${locationState.longitude!.toStringAsFixed(4)}",
-                      ),
+                      // Text(
+                      //   "Lat: ${locationState.latitude!.toStringAsFixed(4)}",
+                      // ),
+                      // Text(
+                      //   "Long: ${locationState.longitude!.toStringAsFixed(4)}",
+                      // ),
                     ],
                   ),
-                ElevatedButton(
-                  onPressed: fetchGeoLocation,
-                  child: const Text("Get my GeoLocation"),
-                ),
+                // ElevatedButton(
+                //   onPressed: fetchGeoLocation,
+                //   child: const Text("Get my GeoLocation"),
+                // ),
                 const SizedBox(height: 20),
                 weatherAsync.when(
                   data: (data) {
