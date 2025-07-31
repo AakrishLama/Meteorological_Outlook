@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geocoding/geocoding.dart';
 import "package:go_router/go_router.dart";
 import 'package:intl/intl.dart';
+import 'package:weather_app/Model/saveLocation.dart';
 import 'package:weather_app/Provider/Location_provider.dart';
 import 'package:weather_app/Provider/Weather.dart';
+import 'package:weather_app/Provider/savedLocation_provider.dart';
 import 'package:weather_app/widgets/input.dart';
 import 'package:weather_app/widgets/appbar.dart';
 import 'package:weather_app/widgets/footer.dart';
@@ -88,6 +90,7 @@ class _MyLocationState extends ConsumerState<MyLocation> {
             )),
           )
         : const AsyncValue.loading();
+    final watchlist = ref.watch(savedLocationProvider);
 
     return Scaffold(
       appBar: Appbar(heading: 'Home'),
@@ -131,7 +134,9 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                       return const Text("");
                     }
                     // print(data.runtimeType); JSON now
-                    return Text("""  
+                    return Column(
+                      children: [
+                        Text("""  
                       name: ${data['name']}, ${data['sys']['country']}
                       ${DateFormat.yMMMMEEEEd().format(DateTime.now())}
                       description: ${data['weather'][0]['description']}
@@ -141,7 +146,30 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                           Wind Speed: ${data['wind']['speed'].toStringAsFixed(2)}
                           latitude: ${locationState.latitude}
                           longitude: ${locationState.longitude}
-                    """);
+                          high: ${data['main']['temp_max'].toStringAsFixed(2)}
+                          low: ${data['main']['temp_min'].toStringAsFixed(2)}
+                    """),
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () {
+                            ref
+                                .read(savedLocationProvider.notifier)
+                                .addLocation(
+                                  SaveLocation(
+                                    name: data['name'],
+                                    latitude: locationState.latitude!,
+                                    longitude: locationState.longitude!,
+                                    description:
+                                        data['weather'][0]['description'],
+                                    high: data['main']['temp_max'],
+                                    low: data['main']['temp_min'],
+                                  ),
+                                );
+                          },
+                          child: const Text("Add to Watchlist"),
+                        ),
+                      ],
+                    );
                   },
                   error: (error, stackTrace) => Text(error.toString()),
                   loading: () => const CircularProgressIndicator(),
@@ -149,7 +177,12 @@ class _MyLocationState extends ConsumerState<MyLocation> {
               ],
             ),
           ),
-          Positioned(bottom: 0, left: 0, right: 0, child: Footer(inputLat, inputLong)),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Footer(inputLat, inputLong),
+          ),
         ],
       ),
     );
