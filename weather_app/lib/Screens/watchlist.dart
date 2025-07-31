@@ -24,9 +24,10 @@ class Watchlist extends ConsumerWidget {
                     final location = watchlist[index];
                     return Card(
                       child: ListTile(
-                        onTap: ()=> GoRouter.of(context).go("/?latitude=${location.latitude}&longitude=${location.longitude}"),
+                        onTap: 
+                        ()=> GoRouter.of(context).go("/?latitude=${location.latitude}&longitude=${location.longitude}"),
                         title: Text("${location.name},${location.country} ${location.temp}"),
-                        subtitle: Text("${location.description}, H:${location.high}, L:${location.low}"),
+                        subtitle: Text("${location.description}, H:${location.high}, L:${location.low}\n click to view weather info"),
                         trailing: IconButton(
                           icon: const Icon(Icons.delete),
                           onPressed: () {
