@@ -70,6 +70,11 @@ class _MyLocationState extends ConsumerState<MyLocation> {
     }
   }
 
+  int kelvinToCelsius(double k) {
+    k=  k - 273.15;
+    return k.toInt();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -140,14 +145,14 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                       name: ${data['name']}, ${data['sys']['country']}
                       ${DateFormat.yMMMMEEEEd().format(DateTime.now())}
                       description: ${data['weather'][0]['description']}
-                      Temp: ${data['main']['temp'].toStringAsFixed(2)}
+                      Temperature: ${kelvinToCelsius(data["main"]["temp"]).toStringAsFixed(2)} °C
                           Humidity: ${data['main']['humidity'].toStringAsFixed(2)}
                           Pressure: ${data['main']['pressure'].toStringAsFixed(2)}
                           Wind Speed: ${data['wind']['speed'].toStringAsFixed(2)}
                           latitude: ${locationState.latitude}
                           longitude: ${locationState.longitude}
-                          high: ${data['main']['temp_max'].toStringAsFixed(2)}
-                          low: ${data['main']['temp_min'].toStringAsFixed(2)}
+                          high: ${kelvinToCelsius(data['main']['temp_max']).toStringAsFixed(2)}
+                          low: ${kelvinToCelsius(data['main']['temp_min']).toStringAsFixed(2)}
                     """),
                         const SizedBox(height: 20),
                         ElevatedButton(
@@ -161,10 +166,21 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                                     longitude: locationState.longitude!,
                                     description:
                                         data['weather'][0]['description'],
-                                    high: data['main']['temp_max'],
-                                    low: data['main']['temp_min'],
+                                    high: kelvinToCelsius(
+                                      data['main']['temp_max'],
+                                    ),
+                                    low: kelvinToCelsius(
+                                      data['main']['temp_min'],
+                                    ),
+                                    temp: kelvinToCelsius(data["main"]["temp"]),
+                                    country: data['sys']['country'],
                                   ),
                                 );
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Location added to watchlist'),
+                              ),
+                            );
                           },
                           child: const Text("Add to Watchlist"),
                         ),

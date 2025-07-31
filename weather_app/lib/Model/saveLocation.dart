@@ -1,10 +1,12 @@
 class SaveLocation {
   String name;
+  int temp;
   final double latitude;
   final double longitude;
   String description;
-  double high;
-  double low;
+  int high;
+  int low;
+  String country;
 
   SaveLocation({
     required this.latitude,
@@ -13,5 +15,7 @@ class SaveLocation {
     required this.description,
     required this.high,
     required this.low,
+    required this.temp,
+    required this.country,
   });
 }
