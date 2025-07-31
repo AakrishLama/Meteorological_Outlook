@@ -5,6 +5,7 @@ import "package:flutter_dotenv/flutter_dotenv.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
+import "package:weather_app/Screens/watchlist.dart";
 import "Screens/home.dart";
 import "package:go_router/go_router.dart";
 import "Screens/forecast.dart";
@@ -34,6 +35,7 @@ Future<void> main() async {
         },
       ),
       GoRoute(path: "/about", builder: (context, state) => const About()),
+      GoRoute(path: "/watchlist", builder: (context, state) => const Watchlist()),
     ],
   );
 

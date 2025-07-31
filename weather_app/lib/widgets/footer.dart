@@ -53,6 +53,12 @@ class Footer extends ConsumerWidget {
                   ,
               child: Text("About"),
             ),
+            const SizedBox(width: 10),
+            ElevatedButton(
+              onPressed: ()=> GoRouter.of(context).go("/watchlist")
+                  ,
+              child: Text("Watchlist"),
+            ),
           ],
         ),
         const SizedBox(height: 45),
