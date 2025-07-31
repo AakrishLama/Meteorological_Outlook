@@ -7,6 +7,7 @@ import 'package:weather_app/Model/saveLocation.dart';
 import 'package:weather_app/Provider/Location_provider.dart';
 import 'package:weather_app/Provider/Weather.dart';
 import 'package:weather_app/Provider/savedLocation_provider.dart';
+import 'package:weather_app/widgets/button.dart';
 import 'package:weather_app/widgets/input.dart';
 import 'package:weather_app/widgets/appbar.dart';
 import 'package:weather_app/widgets/footer.dart';
@@ -89,16 +90,34 @@ class _MyLocationState extends ConsumerState<MyLocation> {
   @override
   Widget build(BuildContext context) {
     final locationState = ref.watch(locationProvider);
-
-    // 👇 Determine what coordinates to use
-    final currentLat = inputLat ?? locationState.latitude; 
-    final currentLong = inputLong ?? locationState.longitude; 
+    final currentLat = inputLat ?? locationState.latitude;
+    final currentLong = inputLong ?? locationState.longitude;
 
     final weatherAsync = (currentLat != null && currentLong != null)
         ? ref.watch(weatherProvider((currentLat, currentLong)))
         : const AsyncValue.loading();
 
     final watchlist = ref.watch(savedLocationProvider);
+
+    void watchList(BuildContext context, data) {
+      ref
+          .read(savedLocationProvider.notifier)
+          .addLocation(
+            SaveLocation(
+              name: data['name'],
+              latitude: currentLat!,
+              longitude: currentLong!,
+              description: data['weather'][0]['description'],
+              high: kelvinToCelsius(data['main']['temp_max']),
+              low: kelvinToCelsius(data['main']['temp_min']),
+              temp: kelvinToCelsius(data["main"]["temp"]),
+              country: data['sys']['country'],
+            ),
+          );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Location added to watchlist')),
+      );
+    }
 
     return Scaffold(
       appBar: Appbar(heading: 'Home'),
@@ -155,35 +174,40 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                       low: ${kelvinToCelsius(data['main']['temp_min']).toStringAsFixed(2)}
                     """),
                         const SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: () {
-                            ref
-                                .read(savedLocationProvider.notifier)
-                                .addLocation(
-                                  SaveLocation(
-                                    name: data['name'],
-                                    latitude: currentLat!, 
-                                    longitude: currentLong!, 
-                                    description:
-                                        data['weather'][0]['description'],
-                                    high: kelvinToCelsius(
-                                      data['main']['temp_max'],
-                                    ),
-                                    low: kelvinToCelsius(
-                                      data['main']['temp_min'],
-                                    ),
-                                    temp: kelvinToCelsius(data["main"]["temp"]),
-                                    country: data['sys']['country'],
-                                  ),
-                                );
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Location added to watchlist'),
-                              ),
-                            );
-                          },
-                          child: const Text("Add to Watchlist"),
+                        Button(
+                          text: 'Add',
+                          onPressed: () => watchList(context, data),
+                          icon: Icons.add,
                         ),
+                        // ElevatedButton(
+                        //   onPressed: () {
+                        //     ref
+                        //         .read(savedLocationProvider.notifier)
+                        //         .addLocation(
+                        //           SaveLocation(
+                        //             name: data['name'],
+                        //             latitude: currentLat!,
+                        //             longitude: currentLong!,
+                        //             description:
+                        //                 data['weather'][0]['description'],
+                        //             high: kelvinToCelsius(
+                        //               data['main']['temp_max'],
+                        //             ),
+                        //             low: kelvinToCelsius(
+                        //               data['main']['temp_min'],
+                        //             ),
+                        //             temp: kelvinToCelsius(data["main"]["temp"]),
+                        //             country: data['sys']['country'],
+                        //           ),
+                        //         );
+                        //     ScaffoldMessenger.of(context).showSnackBar(
+                        //       const SnackBar(
+                        //         content: Text('Location added to watchlist'),
+                        //       ),
+                        //     );
+                        //   },
+                        //   child: const Text("Add to Watchlist"),
+                        // ),
                       ],
                     );
                   },
@@ -197,7 +221,7 @@ class _MyLocationState extends ConsumerState<MyLocation> {
             bottom: 0,
             left: 0,
             right: 0,
-            child: Footer(currentLat, currentLong), 
+            child: Footer(currentLat, currentLong),
           ),
         ],
       ),
