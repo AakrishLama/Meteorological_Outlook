@@ -18,7 +18,18 @@ Future<void> main() async {
   // await dotenv.load(fileName: ".env");
   final goRouter = GoRouter(
     routes: [
-      GoRoute(path: "/", builder: (context, state) => const MyLocation()),
+      GoRoute(
+        path: "/",
+        builder: (context, state) {
+          final lat = double.tryParse(
+            state.uri.queryParameters['latitude'] ?? '',
+          );
+          final long = double.tryParse(
+            state.uri.queryParameters['longitude'] ?? '',
+          );
+          return MyLocation(lat: lat, long: long);
+        },
+      ),
       GoRoute(
         path: "/weatherInfo",
         builder: (context, state) {
@@ -35,7 +46,10 @@ Future<void> main() async {
         },
       ),
       GoRoute(path: "/about", builder: (context, state) => const About()),
-      GoRoute(path: "/watchlist", builder: (context, state) => const Watchlist()),
+      GoRoute(
+        path: "/watchlist",
+        builder: (context, state) => const Watchlist(),
+      ),
     ],
   );
 

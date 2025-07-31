@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:weather_app/Provider/savedLocation_provider.dart';
 import 'package:weather_app/widgets/appbar.dart';
 import 'package:weather_app/widgets/footer.dart';
@@ -23,6 +24,7 @@ class Watchlist extends ConsumerWidget {
                     final location = watchlist[index];
                     return Card(
                       child: ListTile(
+                        onTap: ()=> GoRouter.of(context).go("/?latitude=${location.latitude}&longitude=${location.longitude}"),
                         title: Text("${location.name},${location.country} ${location.temp}"),
                         subtitle: Text("${location.description}, H:${location.high}, L:${location.low}"),
                         trailing: IconButton(

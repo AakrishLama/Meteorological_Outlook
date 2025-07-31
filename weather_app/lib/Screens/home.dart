@@ -12,7 +12,9 @@ import 'package:weather_app/widgets/appbar.dart';
 import 'package:weather_app/widgets/footer.dart';
 
 class MyLocation extends ConsumerStatefulWidget {
-  const MyLocation({super.key});
+  final double? lat;
+  final double? long;
+  const MyLocation({Key? key, this.lat, this.long}) : super(key: key);
 
   @override
   ConsumerState<MyLocation> createState() => _MyLocationState();
@@ -26,7 +28,6 @@ class _MyLocationState extends ConsumerState<MyLocation> {
   String _output = "";
 
   void submit() async {
-    // print("submit");
     _isLoading = true;
     try {
       if (addressController.text.trim().isEmpty) {
@@ -36,9 +37,7 @@ class _MyLocationState extends ConsumerState<MyLocation> {
         });
         return;
       }
-      final locations = await locationFromAddress(
-        addressController.text,
-      ); // returns list of locations
+      final locations = await locationFromAddress(addressController.text);
       setState(() {
         if (locations.isEmpty) {
           _output = "No results found";
@@ -63,38 +62,42 @@ class _MyLocationState extends ConsumerState<MyLocation> {
     setState(() => _isLoading = true);
     try {
       await ref.read(locationProvider.notifier).getCurrentLocation();
+      if (!mounted) return;
       setState(() => _isLoading = false);
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isLoading = false);
-      // Handle error if needed
     }
   }
 
   int kelvinToCelsius(double k) {
-    k=  k - 273.15;
+    k = k - 273.15;
     return k.toInt();
   }
 
   @override
   void initState() {
     super.initState();
+    // If lat and long are provided from route.
+    if (widget.lat != null && widget.long != null) {
+      inputLat = widget.lat;
+      inputLong = widget.long;
+    }
     fetchGeoLocation();
   }
 
-  /// Build method for ui rendering.
   @override
   Widget build(BuildContext context) {
     final locationState = ref.watch(locationProvider);
-    final weatherAsync = (inputLat != null && inputLong != null)
-        ? ref.watch(weatherProvider((inputLat!, inputLong!)))
-        : (locationState.latitude != null && locationState.longitude != null)
-        ? ref.watch(
-            weatherProvider((
-              locationState.latitude!,
-              locationState.longitude!,
-            )),
-          )
+
+    // 👇 Determine what coordinates to use
+    final currentLat = inputLat ?? locationState.latitude; 
+    final currentLong = inputLong ?? locationState.longitude; 
+
+    final weatherAsync = (currentLat != null && currentLong != null)
+        ? ref.watch(weatherProvider((currentLat, currentLong)))
         : const AsyncValue.loading();
+
     final watchlist = ref.watch(savedLocationProvider);
 
     return Scaffold(
@@ -105,11 +108,9 @@ class _MyLocationState extends ConsumerState<MyLocation> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Input field for address from input widget.
                 Input(inputController: addressController, onSubmit: submit),
                 const SizedBox(height: 20),
 
-                // condition check for loading location
                 if (_isLoading)
                   const CircularProgressIndicator()
                 else if (_output.isNotEmpty)
@@ -132,27 +133,26 @@ class _MyLocationState extends ConsumerState<MyLocation> {
 
                 const SizedBox(height: 20),
 
-                // condition check for loading weather
                 weatherAsync.when(
                   data: (data) {
                     if (data.isEmpty) {
                       return const Text("");
                     }
-                    // print(data.runtimeType); JSON now
+
                     return Column(
                       children: [
-                        Text("""  
+                        Text("""
                       name: ${data['name']}, ${data['sys']['country']}
                       ${DateFormat.yMMMMEEEEd().format(DateTime.now())}
                       description: ${data['weather'][0]['description']}
                       Temperature: ${kelvinToCelsius(data["main"]["temp"]).toStringAsFixed(2)} °C
-                          Humidity: ${data['main']['humidity'].toStringAsFixed(2)}
-                          Pressure: ${data['main']['pressure'].toStringAsFixed(2)}
-                          Wind Speed: ${data['wind']['speed'].toStringAsFixed(2)}
-                          latitude: ${locationState.latitude}
-                          longitude: ${locationState.longitude}
-                          high: ${kelvinToCelsius(data['main']['temp_max']).toStringAsFixed(2)}
-                          low: ${kelvinToCelsius(data['main']['temp_min']).toStringAsFixed(2)}
+                      Humidity: ${data['main']['humidity'].toStringAsFixed(2)}
+                      Pressure: ${data['main']['pressure'].toStringAsFixed(2)}
+                      Wind Speed: ${data['wind']['speed'].toStringAsFixed(2)}
+                      latitude: ${currentLat}    
+                      longitude: ${currentLong}  
+                      high: ${kelvinToCelsius(data['main']['temp_max']).toStringAsFixed(2)}
+                      low: ${kelvinToCelsius(data['main']['temp_min']).toStringAsFixed(2)}
                     """),
                         const SizedBox(height: 20),
                         ElevatedButton(
@@ -162,8 +162,8 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                                 .addLocation(
                                   SaveLocation(
                                     name: data['name'],
-                                    latitude: locationState.latitude!,
-                                    longitude: locationState.longitude!,
+                                    latitude: currentLat!, 
+                                    longitude: currentLong!, 
                                     description:
                                         data['weather'][0]['description'],
                                     high: kelvinToCelsius(
@@ -197,7 +197,7 @@ class _MyLocationState extends ConsumerState<MyLocation> {
             bottom: 0,
             left: 0,
             right: 0,
-            child: Footer(inputLat, inputLong),
+            child: Footer(currentLat, currentLong), 
           ),
         ],
       ),
