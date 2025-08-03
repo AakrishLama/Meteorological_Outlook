@@ -22,22 +22,48 @@ class MyLocation extends ConsumerStatefulWidget {
 }
 
 class _MyLocationState extends ConsumerState<MyLocation> {
+  
   TextEditingController addressController = TextEditingController();
   double? inputLat;
   double? inputLong;
   bool _isLoading = false;
   String _output = "";
-  Map<String, dynamic> weatherDiscription = {
-    "clear sky": ["☀️", "assets/clearsky.jpeg"],
-    "few clouds": ["🌤️", "assets/fewClouds.jpeg" ],
-    "scattered clouds": ["☁️", "assets/scatteredClouds.jpeg"],
-    "broken clouds": ["🌧️", "assets/brokenClouds.jpeg"],
-    "shower rain": ["🌦️", "assets/showerRain.jpeg"],
-    "rain": ["🌧️", "assets/rain.jpeg"],
-    "thunderstorm": ["⛈️", "assets/thunderstorm.jpeg"],
-    "snow": ["❄️", "assets/snow.jpeg"],
-    "mist": ["🌫️", "assets/mist.jpeg"],
-  };
+  final Map<String, List<String>> weatherDiscription = {
+  "clear sky": ["☀️", "assets/clearsky.jpeg"],
+  "few clouds": ["🌤️", "assets/fewClouds.jpeg"],
+  "scattered clouds": ["☁️", "assets/scatteredClouds.jpeg"],
+  "broken clouds": ["🌥️", "assets/brokenClouds.jpeg"],
+  "overcast clouds": ["🌥️", "assets/brokenClouds.jpeg"],
+
+  "light rain": ["🌦️", "assets/rain.jpeg"],
+  "moderate rain": ["🌧️", "assets/rain.jpeg"],
+  "heavy intensity rain": ["🌧️", "assets/rain.jpeg"],
+  "shower rain": ["🌧️", "assets/showerRain.jpeg"],
+
+  "thunderstorm": ["⛈️", "assets/thunderstorm.jpeg"],
+  "thunderstorm with light rain": ["⛈️", "assets/thunderstorm.jpeg"],
+  "thunderstorm with heavy rain": ["⛈️", "assets/thunderstorm.jpeg"],
+
+  "light snow": ["🌨️", "assets/snow.jpeg"],
+  "snow": ["❄️", "assets/snow.jpeg"],
+  "heavy snow": ["❄️", "assets/snow.jpeg"],
+
+  "mist": ["🌫️", "assets/mist.jpeg"],
+  "fog": ["🌫️", "assets/mist.jpeg"],
+  "haze": ["🌫️", "assets/mist.jpeg"],
+  "smoke": ["🌫️", "assets/mist.jpeg"],
+  "dust": ["🌫️", "assets/mist.jpeg"],
+  "sand": ["🌫️", "assets/mist.jpeg"],
+  "squalls": ["🌬️", "assets/mist.jpeg"],
+  "tornado": ["🌪️", "assets/mist.jpeg"],
+
+  "drizzle": ["🌧️", "assets/showerRain.jpeg"],
+  "light intensity drizzle": ["🌦️", "assets/showerRain.jpeg"],
+  "heavy intensity drizzle": ["🌧️", "assets/showerRain.jpeg"],
+};
+
+
+  String backgroundImage = "assets/clearsky.jpeg";
 
   void submit() async {
     _isLoading = true;
@@ -130,11 +156,20 @@ class _MyLocationState extends ConsumerState<MyLocation> {
       );
     }
 
+    weatherAsync.whenData((data) {
+    if (data.isNotEmpty) {
+      final desc = data['weather'][0]['description'];
+      if (weatherDiscription.containsKey(desc)) {
+        backgroundImage = weatherDiscription[desc]![1]; // Get image path
+      }
+    }
+  });
+
     return Stack(
       children: [Container(
-        decoration: const BoxDecoration(
+        decoration:  BoxDecoration(
           image: DecorationImage(
-            image: AssetImage("assets/mist.jpeg"),
+            image: AssetImage(backgroundImage),
             fit: BoxFit.cover,
           ),
         ),
@@ -146,7 +181,8 @@ class _MyLocationState extends ConsumerState<MyLocation> {
           children: [
             Center(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Input(inputController: addressController, onSubmit: submit),
                   const SizedBox(height: 20),
