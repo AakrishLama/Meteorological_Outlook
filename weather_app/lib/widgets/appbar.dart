@@ -14,13 +14,13 @@ class Appbar extends StatelessWidget implements PreferredSizeWidget {
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10), // Blur strength
         child: AppBar(
           backgroundColor: Colors.white.withOpacity(0), // Frosted look
-          elevation: 0,
+          elevation: 1,
           centerTitle: true,
           title: Text(
             heading,
             style: GoogleFonts.vollkorn(
               fontSize: 40,
-              color: Colors.white,
+              color: Colors.black,
               fontWeight: FontWeight.w600,
             )
           ),

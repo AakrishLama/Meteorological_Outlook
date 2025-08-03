@@ -1,10 +1,10 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class Button extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
   final IconData? icon;
-  final double width;
   final double height;
 
   const Button({
@@ -12,7 +12,6 @@ class Button extends StatelessWidget {
     required this.text,
     required this.onPressed,
     this.icon,
-    this.width = 90,
     this.height = 50,
   }) : super(key: key);
 
@@ -20,43 +19,47 @@ class Button extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onPressed,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        width: width,
-        height: height,
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF00C6FF), Color(0xFF0072FF)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.blue.withOpacity(0.4),
-              offset: const Offset(0, 8),
-              blurRadius: 16,
-            ),
-          ],
-          borderRadius: BorderRadius.circular(30),
-        ),
-        child: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (icon != null) ...[
-                Icon(icon, color: Colors.white),
-                const SizedBox(width: 8),
-              ],
-              Text(
-                text,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 1.0,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(30),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+          child: IntrinsicWidth(
+            child: Container(
+              height: height,
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 65, 56, 56).withOpacity(0.2),
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(color: Colors.white30, width: 1.5),
+              ),
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (icon != null) ...[
+                      Icon(icon, color: Colors.white, size: 30),
+                      const SizedBox(width: 6),
+                    ],
+                    // Wrapped Text with DefaultTextStyle
+                    DefaultTextStyle(
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      child: Flexible(
+                        child: Text(
+                          text,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                          maxLines: 1,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
         ),
       ),

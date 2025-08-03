@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -13,6 +14,7 @@ class Footer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final locationState = ref.watch(locationProvider);
+
     void goToWeatherInfo(BuildContext context) {
       final latitude = locationState.latitude;
       final longitude = locationState.longitude;
@@ -25,54 +27,62 @@ class Footer extends ConsumerWidget {
       }
     }
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            const Expanded(child: Divider(color: Colors.black, thickness: 1)),
-          ],
-        ),
-        Row(
-          children: [
-            const SizedBox(width: 10),
-            Button(
-              text: 'Home',
-              onPressed: () => GoRouter.of(context).go("/"),
-              icon: Icons.home,
+    return ClipOval(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0),
+            border: Border(
+              top: BorderSide(color: Colors.white.withOpacity(0.2), width: 1),
             ),
-            const SizedBox(width: 10),
-            if (locationState.latitude != null &&
-                locationState.longitude != null)
-              Button(
-                text: "Forecast",
-                onPressed: () => goToWeatherInfo(context),
-              )
-            else
-              Opacity(
-                opacity: 0.4,
-                child: Button(
-                  text: "Forecast",
-                  onPressed: () {}, // do nothing
-                ),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Divider(color: Colors.white54, thickness: 0.6),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 7,
+                runSpacing: 0,
+                alignment: WrapAlignment.center,
+                children: [
+                  Button(
+                    text: "",
+                    onPressed: () => GoRouter.of(context).go("/"),
+                    icon: Icons.home,
+                  ),
+                  if (locationState.latitude != null &&
+                      locationState.longitude != null)
+                    Button(
+                      text: "Forecast",
+                      onPressed: () => goToWeatherInfo(context),
+                      icon: Icons.cloud
+                    )
+                  else
+                    Opacity(
+                      opacity: 0.4,
+                      child: Button(text: "Forecast", onPressed: () {}),
+                    ),
+                  Button(
+                    text: 'About',
+                    onPressed: () => GoRouter.of(context).go("/about"),
+
+                  ),
+                  Button(
+                    onPressed: () => GoRouter.of(context).go("/watchlist"),
+                    text: '',
+                    icon: Icons.bookmark,
+                  ),
+                ],
               ),
-            const SizedBox(width: 10),
-            Button(
-              text: 'About',
-              onPressed: () => GoRouter.of(context).go("/about"),
-              icon: Icons.info,
-            ),
-            const SizedBox(width: 10),
-            Button(
-              onPressed: () => GoRouter.of(context).go("/watchlist"),
-              text: 'Watchlist',
-            ),
-          ],
+
+              const SizedBox(height: 10),
+            ],
+          ),
         ),
-        const SizedBox(height: 45),
-      ],
+      ),
     );
   }
 }

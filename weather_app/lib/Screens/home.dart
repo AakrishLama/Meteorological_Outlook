@@ -22,46 +22,44 @@ class MyLocation extends ConsumerStatefulWidget {
 }
 
 class _MyLocationState extends ConsumerState<MyLocation> {
-  
   TextEditingController addressController = TextEditingController();
   double? inputLat;
   double? inputLong;
   bool _isLoading = false;
   String _output = "";
   final Map<String, List<String>> weatherDiscription = {
-  "clear sky": ["☀️", "assets/clearsky.jpeg"],
-  "few clouds": ["🌤️", "assets/fewClouds.jpeg"],
-  "scattered clouds": ["☁️", "assets/scatteredClouds.jpeg"],
-  "broken clouds": ["🌥️", "assets/brokenClouds.jpeg"],
-  "overcast clouds": ["🌥️", "assets/brokenClouds.jpeg"],
+    "clear sky": ["☀️", "assets/clearsky.jpeg"],
+    "few clouds": ["🌤️", "assets/fewClouds.jpeg"],
+    "scattered clouds": ["☁️", "assets/scatteredClouds.jpeg"],
+    "broken clouds": ["🌥️", "assets/brokenClouds.jpeg"],
+    "overcast clouds": ["🌥️", "assets/brokenClouds.jpeg"],
 
-  "light rain": ["🌦️", "assets/rain.jpeg"],
-  "moderate rain": ["🌧️", "assets/rain.jpeg"],
-  "heavy intensity rain": ["🌧️", "assets/rain.jpeg"],
-  "shower rain": ["🌧️", "assets/showerRain.jpeg"],
+    "light rain": ["🌦️", "assets/Rain.jpeg"],
+    "moderate rain": ["🌧️", "assets/Rain.jpeg"],
+    "heavy intensity rain": ["🌧️", "assets/Rain.jpeg"],
+    "shower rain": ["🌧️", "assets/showerRain.jpeg"],
 
-  "thunderstorm": ["⛈️", "assets/thunderstorm.jpeg"],
-  "thunderstorm with light rain": ["⛈️", "assets/thunderstorm.jpeg"],
-  "thunderstorm with heavy rain": ["⛈️", "assets/thunderstorm.jpeg"],
+    "thunderstorm": ["⛈️", "assets/thunderstorm.jpeg"],
+    "thunderstorm with light rain": ["⛈️", "assets/thunderstorm.jpeg"],
+    "thunderstorm with heavy rain": ["⛈️", "assets/thunderstorm.jpeg"],
 
-  "light snow": ["🌨️", "assets/snow.jpeg"],
-  "snow": ["❄️", "assets/snow.jpeg"],
-  "heavy snow": ["❄️", "assets/snow.jpeg"],
+    "light snow": ["🌨️", "assets/snow.jpeg"],
+    "snow": ["❄️", "assets/snow.jpeg"],
+    "heavy snow": ["❄️", "assets/snow.jpeg"],
 
-  "mist": ["🌫️", "assets/mist.jpeg"],
-  "fog": ["🌫️", "assets/mist.jpeg"],
-  "haze": ["🌫️", "assets/mist.jpeg"],
-  "smoke": ["🌫️", "assets/mist.jpeg"],
-  "dust": ["🌫️", "assets/mist.jpeg"],
-  "sand": ["🌫️", "assets/mist.jpeg"],
-  "squalls": ["🌬️", "assets/mist.jpeg"],
-  "tornado": ["🌪️", "assets/mist.jpeg"],
+    "mist": ["🌫️", "assets/mist.jpeg"],
+    "fog": ["🌫️", "assets/mist.jpeg"],
+    "haze": ["🌫️", "assets/mist.jpeg"],
+    "smoke": ["🌫️", "assets/mist.jpeg"],
+    "dust": ["🌫️", "assets/mist.jpeg"],
+    "sand": ["🌫️", "assets/mist.jpeg"],
+    "squalls": ["🌬️", "assets/mist.jpeg"],
+    "tornado": ["🌪️", "assets/mist.jpeg"],
 
-  "drizzle": ["🌧️", "assets/showerRain.jpeg"],
-  "light intensity drizzle": ["🌦️", "assets/showerRain.jpeg"],
-  "heavy intensity drizzle": ["🌧️", "assets/showerRain.jpeg"],
-};
-
+    "drizzle": ["🌧️", "assets/showerRain.jpeg"],
+    "light intensity drizzle": ["🌦️", "assets/showerRain.jpeg"],
+    "heavy intensity drizzle": ["🌧️", "assets/showerRain.jpeg"],
+  };
 
   String backgroundImage = "assets/clearsky.jpeg";
 
@@ -157,105 +155,105 @@ class _MyLocationState extends ConsumerState<MyLocation> {
     }
 
     weatherAsync.whenData((data) {
-    if (data.isNotEmpty) {
-      final desc = data['weather'][0]['description'];
-      if (weatherDiscription.containsKey(desc)) {
-        backgroundImage = weatherDiscription[desc]![1]; // Get image path
+      if (data.isNotEmpty) {
+        final desc = data['weather'][0]['description'];
+        if (weatherDiscription.containsKey(desc)) {
+          backgroundImage = weatherDiscription[desc]![1]; // Get image path
+        }
       }
-    }
-  });
+    });
 
     return Stack(
-      children: [Container(
-        decoration:  BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(backgroundImage),
-            fit: BoxFit.cover,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(backgroundImage),
+              fit: BoxFit.cover,
+            ),
           ),
         ),
-      ),
         Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: Appbar(heading: 'Weather App'),
-        body: Stack(
-          children: [
-            Center(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Input(inputController: addressController, onSubmit: submit),
-                  const SizedBox(height: 20),
-      
-                  if (_isLoading)
-                    const CircularProgressIndicator()
-                  else if (_output.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(_output, style: TextStyle(fontSize: 16)),
-                    )
-                  else
-                    Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            locationState.locationMessage!,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ],
-                    ),
-      
-                  const SizedBox(height: 20),
-      
-                  weatherAsync.when(
-                    data: (data) {
-                      if (data.isEmpty) {
-                        return const Text("");
-                      }
-      
-                      return Column(
+          backgroundColor: Colors.transparent,
+          appBar: Appbar(heading: 'Weather App'),
+          body: Stack(
+            children: [
+              Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Input(inputController: addressController, onSubmit: submit),
+                    const SizedBox(height: 20),
+
+                    if (_isLoading)
+                      const CircularProgressIndicator()
+                    else if (_output.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(_output, style: TextStyle(fontSize: 16)),
+                      )
+                    else
+                      Column(
                         children: [
-                          Text("""
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              locationState.locationMessage!,
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                    const SizedBox(height: 20),
+
+                    weatherAsync.when(
+                      data: (data) {
+                        if (data.isEmpty) {
+                          return const Text("");
+                        }
+
+                        return Column(
+                          children: [
+                            Text("""
                         name: ${data['name']}, ${data['sys']['country']}
                         ${DateFormat.yMMMMEEEEd().format(DateTime.now())}
                         description: ${data['weather'][0]['description']}
-                        Temperature: ${kelvinToCelsius(data["main"]["temp"]).toStringAsFixed(2)} °C
+                        Temperature: ${kelvinToCelsius(data["main"]["temp"])} °C
                         Humidity: ${data['main']['humidity'].toStringAsFixed(2)}
                         Pressure: ${data['main']['pressure'].toStringAsFixed(2)}
                         Wind Speed: ${data['wind']['speed'].toStringAsFixed(2)}
                         latitude: ${currentLat}    
                         longitude: ${currentLong}  
-                        high: ${kelvinToCelsius(data['main']['temp_max']).toStringAsFixed(2)}
-                        low: ${kelvinToCelsius(data['main']['temp_min']).toStringAsFixed(2)}
+                        high: ${kelvinToCelsius(data['main']['temp_max'])}
+                        low: ${kelvinToCelsius(data['main']['temp_min'])}
                       """),
-                          const SizedBox(height: 20),
-                          Button(
-                            text: 'Add',
-                            onPressed: () => watchList(context, data),
-                            icon: Icons.add,
-                          ),
-                        ],
-                      );
-                    },
-                    error: (error, stackTrace) => Text(error.toString()),
-                    loading: () => const CircularProgressIndicator(),
-                  ),
-                ],
+                            const SizedBox(height: 20),
+                            Button(
+                              text: 'Add',
+                              onPressed: () => watchList(context, data),
+                              icon: Icons.add,
+                            ),
+                          ],
+                        );
+                      },
+                      error: (error, stackTrace) => Text(error.toString()),
+                      loading: () => const CircularProgressIndicator(),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Footer(currentLat, currentLong),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-      ]
-        
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: Footer(currentLat, currentLong),
+        ),
+      ],
     );
   }
 }
