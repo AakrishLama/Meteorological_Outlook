@@ -27,6 +27,17 @@ class _MyLocationState extends ConsumerState<MyLocation> {
   double? inputLong;
   bool _isLoading = false;
   String _output = "";
+  Map<String, dynamic> weatherDiscription = {
+    "clear sky": ["☀️", "assets/clearsky.jpeg"],
+    "few clouds": ["🌤️", "assets/fewClouds.jpeg" ],
+    "scattered clouds": ["☁️", "assets/scatteredClouds.jpeg"],
+    "broken clouds": ["🌧️", "assets/brokenClouds.jpeg"],
+    "shower rain": ["🌦️", "assets/showerRain.jpeg"],
+    "rain": ["🌧️", "assets/rain.jpeg"],
+    "thunderstorm": ["⛈️", "assets/thunderstorm.jpeg"],
+    "snow": ["❄️", "assets/snow.jpeg"],
+    "mist": ["🌫️", "assets/mist.jpeg"],
+  };
 
   void submit() async {
     _isLoading = true;
@@ -119,112 +130,96 @@ class _MyLocationState extends ConsumerState<MyLocation> {
       );
     }
 
-    return Scaffold(
-      appBar: Appbar(heading: 'Home'),
-      body: Stack(
-        children: [
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Input(inputController: addressController, onSubmit: submit),
-                const SizedBox(height: 20),
-
-                if (_isLoading)
-                  const CircularProgressIndicator()
-                else if (_output.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(_output, style: TextStyle(fontSize: 16)),
-                  )
-                else
-                  Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          locationState.locationMessage!,
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                const SizedBox(height: 20),
-
-                weatherAsync.when(
-                  data: (data) {
-                    if (data.isEmpty) {
-                      return const Text("");
-                    }
-
-                    return Column(
-                      children: [
-                        Text("""
-                      name: ${data['name']}, ${data['sys']['country']}
-                      ${DateFormat.yMMMMEEEEd().format(DateTime.now())}
-                      description: ${data['weather'][0]['description']}
-                      Temperature: ${kelvinToCelsius(data["main"]["temp"]).toStringAsFixed(2)} °C
-                      Humidity: ${data['main']['humidity'].toStringAsFixed(2)}
-                      Pressure: ${data['main']['pressure'].toStringAsFixed(2)}
-                      Wind Speed: ${data['wind']['speed'].toStringAsFixed(2)}
-                      latitude: ${currentLat}    
-                      longitude: ${currentLong}  
-                      high: ${kelvinToCelsius(data['main']['temp_max']).toStringAsFixed(2)}
-                      low: ${kelvinToCelsius(data['main']['temp_min']).toStringAsFixed(2)}
-                    """),
-                        const SizedBox(height: 20),
-                        Button(
-                          text: 'Add',
-                          onPressed: () => watchList(context, data),
-                          icon: Icons.add,
-                        ),
-                        // ElevatedButton(
-                        //   onPressed: () {
-                        //     ref
-                        //         .read(savedLocationProvider.notifier)
-                        //         .addLocation(
-                        //           SaveLocation(
-                        //             name: data['name'],
-                        //             latitude: currentLat!,
-                        //             longitude: currentLong!,
-                        //             description:
-                        //                 data['weather'][0]['description'],
-                        //             high: kelvinToCelsius(
-                        //               data['main']['temp_max'],
-                        //             ),
-                        //             low: kelvinToCelsius(
-                        //               data['main']['temp_min'],
-                        //             ),
-                        //             temp: kelvinToCelsius(data["main"]["temp"]),
-                        //             country: data['sys']['country'],
-                        //           ),
-                        //         );
-                        //     ScaffoldMessenger.of(context).showSnackBar(
-                        //       const SnackBar(
-                        //         content: Text('Location added to watchlist'),
-                        //       ),
-                        //     );
-                        //   },
-                        //   child: const Text("Add to Watchlist"),
-                        // ),
-                      ],
-                    );
-                  },
-                  error: (error, stackTrace) => Text(error.toString()),
-                  loading: () => const CircularProgressIndicator(),
-                ),
-              ],
-            ),
+    return Stack(
+      children: [Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/mist.jpeg"),
+            fit: BoxFit.cover,
           ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Footer(currentLat, currentLong),
-          ),
-        ],
+        ),
       ),
+        Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: Appbar(heading: 'Weather App'),
+        body: Stack(
+          children: [
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Input(inputController: addressController, onSubmit: submit),
+                  const SizedBox(height: 20),
+      
+                  if (_isLoading)
+                    const CircularProgressIndicator()
+                  else if (_output.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(_output, style: TextStyle(fontSize: 16)),
+                    )
+                  else
+                    Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            locationState.locationMessage!,
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ],
+                    ),
+      
+                  const SizedBox(height: 20),
+      
+                  weatherAsync.when(
+                    data: (data) {
+                      if (data.isEmpty) {
+                        return const Text("");
+                      }
+      
+                      return Column(
+                        children: [
+                          Text("""
+                        name: ${data['name']}, ${data['sys']['country']}
+                        ${DateFormat.yMMMMEEEEd().format(DateTime.now())}
+                        description: ${data['weather'][0]['description']}
+                        Temperature: ${kelvinToCelsius(data["main"]["temp"]).toStringAsFixed(2)} °C
+                        Humidity: ${data['main']['humidity'].toStringAsFixed(2)}
+                        Pressure: ${data['main']['pressure'].toStringAsFixed(2)}
+                        Wind Speed: ${data['wind']['speed'].toStringAsFixed(2)}
+                        latitude: ${currentLat}    
+                        longitude: ${currentLong}  
+                        high: ${kelvinToCelsius(data['main']['temp_max']).toStringAsFixed(2)}
+                        low: ${kelvinToCelsius(data['main']['temp_min']).toStringAsFixed(2)}
+                      """),
+                          const SizedBox(height: 20),
+                          Button(
+                            text: 'Add',
+                            onPressed: () => watchList(context, data),
+                            icon: Icons.add,
+                          ),
+                        ],
+                      );
+                    },
+                    error: (error, stackTrace) => Text(error.toString()),
+                    loading: () => const CircularProgressIndicator(),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Footer(currentLat, currentLong),
+            ),
+          ],
+        ),
+      ),
+      ]
+        
     );
   }
 }
