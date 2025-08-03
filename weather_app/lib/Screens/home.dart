@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geocoding/geocoding.dart';
 import "package:go_router/go_router.dart";
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:weather_app/Model/saveLocation.dart';
 import 'package:weather_app/Provider/Location_provider.dart';
 import 'package:weather_app/Provider/Weather.dart';
@@ -11,6 +12,7 @@ import 'package:weather_app/widgets/button.dart';
 import 'package:weather_app/widgets/input.dart';
 import 'package:weather_app/widgets/appbar.dart';
 import 'package:weather_app/widgets/footer.dart';
+import 'package:weather_app/widgets/weatherCard.dart';
 
 class MyLocation extends ConsumerStatefulWidget {
   final double? lat;
@@ -28,40 +30,41 @@ class _MyLocationState extends ConsumerState<MyLocation> {
   bool _isLoading = false;
   String _output = "";
   final Map<String, List<String>> weatherDiscription = {
-    "clear sky": ["☀️", "assets/clearsky.jpeg"],
-    "few clouds": ["🌤️", "assets/fewClouds.jpeg"],
-    "scattered clouds": ["☁️", "assets/scatteredClouds.jpeg"],
-    "broken clouds": ["🌥️", "assets/brokenClouds.jpeg"],
-    "overcast clouds": ["🌥️", "assets/brokenClouds.jpeg"],
+    "clear sky": ["assets/clearsky.json", "assets/clearsky.jpeg"],
+    "few clouds": ["assets/fewClouds.json", "assets/fewClouds.jpeg"],
+    "scattered clouds": ["assets/scatteredClouds.json", "assets/scatteredClouds.jpeg"],
+    "broken clouds": ["assets/brokenClouds.json", "assets/brokenClouds.jpeg"],
+    "overcast clouds": ["assets/brokenClouds.json", "assets/brokenClouds.jpeg"],
 
-    "light rain": ["🌦️", "assets/Rain.jpeg"],
-    "moderate rain": ["🌧️", "assets/Rain.jpeg"],
-    "heavy intensity rain": ["🌧️", "assets/Rain.jpeg"],
-    "shower rain": ["🌧️", "assets/showerRain.jpeg"],
+    "light rain": ["assets/rain.json", "assets/Rain.jpeg"],
+    "moderate rain": ["assets/rain.json", "assets/Rain.jpeg"],
+    "heavy intensity rain": ["assets/rain.json", "assets/Rain.jpeg"],
+    "shower rain": ["assets/showerRain.json", "assets/showerRain.jpeg"],
 
-    "thunderstorm": ["⛈️", "assets/thunderstorm.jpeg"],
-    "thunderstorm with light rain": ["⛈️", "assets/thunderstorm.jpeg"],
-    "thunderstorm with heavy rain": ["⛈️", "assets/thunderstorm.jpeg"],
+    "thunderstorm": ["assets/thunderstorm.json", "assets/thunderstorm.jpeg"],
+    "thunderstorm with light rain": ["assets/thunderstorm.json", "assets/thunderstorm.jpeg"],
+    "thunderstorm with heavy rain": ["assets/thunderstorm.json", "assets/thunderstorm.jpeg"],
 
-    "light snow": ["🌨️", "assets/snow.jpeg"],
-    "snow": ["❄️", "assets/snow.jpeg"],
-    "heavy snow": ["❄️", "assets/snow.jpeg"],
+    "light snow": ["assets/snow.json", "assets/snow.jpeg"],
+    "snow": ["assets/snow.json", "assets/snow.jpeg"],
+    "heavy snow": ["assets/snow.json", "assets/snow.jpeg"],
 
-    "mist": ["🌫️", "assets/mist.jpeg"],
-    "fog": ["🌫️", "assets/mist.jpeg"],
-    "haze": ["🌫️", "assets/mist.jpeg"],
-    "smoke": ["🌫️", "assets/mist.jpeg"],
-    "dust": ["🌫️", "assets/mist.jpeg"],
-    "sand": ["🌫️", "assets/mist.jpeg"],
-    "squalls": ["🌬️", "assets/mist.jpeg"],
-    "tornado": ["🌪️", "assets/mist.jpeg"],
+    "mist": ["assets/mist.json", "assets/mist.jpeg"],
+    "fog": ["assets/mist.json", "assets/mist.jpeg"],
+    "haze": ["assets/mist.json", "assets/mist.jpeg"],
+    "smoke": ["assets/mist.json", "assets/mist.jpeg"],
+    "dust": ["assets/mist.json", "assets/mist.jpeg"],
+    "sand": ["assets/mist.json", "assets/mist.jpeg"],
+    "squalls": ["assets/mist.json", "assets/mist.jpeg"],
+    "tornado": ["assets/mist.json", "assets/mist.jpeg"],
 
-    "drizzle": ["🌧️", "assets/showerRain.jpeg"],
-    "light intensity drizzle": ["🌦️", "assets/showerRain.jpeg"],
-    "heavy intensity drizzle": ["🌧️", "assets/showerRain.jpeg"],
+    "drizzle": ["assets/showerRain.json", "assets/showerRain.jpeg"],
+    "light intensity drizzle": ["assets/showerRain.json", "assets/showerRain.jpeg"],
+    "heavy intensity drizzle": ["assets/showerRain.json", "assets/showerRain.jpeg"],
   };
 
   String backgroundImage = "assets/clearsky.jpeg";
+  String animation = "assets/thunderstorm.json";
 
   void submit() async {
     _isLoading = true;
@@ -158,7 +161,8 @@ class _MyLocationState extends ConsumerState<MyLocation> {
       if (data.isNotEmpty) {
         final desc = data['weather'][0]['description'];
         if (weatherDiscription.containsKey(desc)) {
-          backgroundImage = weatherDiscription[desc]![1]; // Get image path
+          backgroundImage = weatherDiscription[desc]![1]; 
+          animation= weatherDiscription[desc]![0];
         }
       }
     });
@@ -205,7 +209,6 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                           ),
                         ],
                       ),
-
                     const SizedBox(height: 20),
 
                     weatherAsync.when(
@@ -213,22 +216,22 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                         if (data.isEmpty) {
                           return const Text("");
                         }
-
                         return Column(
                           children: [
-                            Text("""
-                        name: ${data['name']}, ${data['sys']['country']}
-                        ${DateFormat.yMMMMEEEEd().format(DateTime.now())}
-                        description: ${data['weather'][0]['description']}
-                        Temperature: ${kelvinToCelsius(data["main"]["temp"])} °C
-                        Humidity: ${data['main']['humidity'].toStringAsFixed(2)}
-                        Pressure: ${data['main']['pressure'].toStringAsFixed(2)}
-                        Wind Speed: ${data['wind']['speed'].toStringAsFixed(2)}
-                        latitude: ${currentLat}    
-                        longitude: ${currentLong}  
-                        high: ${kelvinToCelsius(data['main']['temp_max'])}
-                        low: ${kelvinToCelsius(data['main']['temp_min'])}
-                      """),
+                            // weather data from API.
+                            WeatherCard(
+                              city: data['name'],
+                              country: data['sys']['country'],
+                              description: data['weather'][0]['description'],
+                              temp: kelvinToCelsius(data["main"]["temp"]),
+                              low: kelvinToCelsius(data['main']['temp_min']),
+                              high: kelvinToCelsius(data['main']['temp_max']),
+                              humidity: data['main']['humidity'],
+                              pressure: data['main']['pressure'],
+                              windspeed: data['wind']['speed'],
+                              animation: animation,
+                            ),
+
                             const SizedBox(height: 20),
                             Button(
                               text: 'Add',
