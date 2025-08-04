@@ -13,6 +13,7 @@ import 'package:weather_app/widgets/input.dart';
 import 'package:weather_app/widgets/appbar.dart';
 import 'package:weather_app/widgets/footer.dart';
 import 'package:weather_app/widgets/weatherCard.dart';
+import 'package:weather_app/widgets/weatherDetail.dart';
 
 class MyLocation extends ConsumerStatefulWidget {
   final double? lat;
@@ -32,7 +33,10 @@ class _MyLocationState extends ConsumerState<MyLocation> {
   final Map<String, List<String>> weatherDiscription = {
     "clear sky": ["assets/clearsky.json", "assets/clearsky.jpeg"],
     "few clouds": ["assets/fewClouds.json", "assets/fewClouds.jpeg"],
-    "scattered clouds": ["assets/scatteredClouds.json", "assets/scatteredClouds.jpeg"],
+    "scattered clouds": [
+      "assets/scatteredClouds.json",
+      "assets/scatteredClouds.jpeg",
+    ],
     "broken clouds": ["assets/brokenClouds.json", "assets/brokenClouds.jpeg"],
     "overcast clouds": ["assets/brokenClouds.json", "assets/brokenClouds.jpeg"],
 
@@ -42,8 +46,14 @@ class _MyLocationState extends ConsumerState<MyLocation> {
     "shower rain": ["assets/showerRain.json", "assets/showerRain.jpeg"],
 
     "thunderstorm": ["assets/thunderstorm.json", "assets/thunderstorm.jpeg"],
-    "thunderstorm with light rain": ["assets/thunderstorm.json", "assets/thunderstorm.jpeg"],
-    "thunderstorm with heavy rain": ["assets/thunderstorm.json", "assets/thunderstorm.jpeg"],
+    "thunderstorm with light rain": [
+      "assets/thunderstorm.json",
+      "assets/thunderstorm.jpeg",
+    ],
+    "thunderstorm with heavy rain": [
+      "assets/thunderstorm.json",
+      "assets/thunderstorm.jpeg",
+    ],
 
     "light snow": ["assets/snow.json", "assets/snow.jpeg"],
     "snow": ["assets/snow.json", "assets/snow.jpeg"],
@@ -59,8 +69,14 @@ class _MyLocationState extends ConsumerState<MyLocation> {
     "tornado": ["assets/mist.json", "assets/mist.jpeg"],
 
     "drizzle": ["assets/showerRain.json", "assets/showerRain.jpeg"],
-    "light intensity drizzle": ["assets/showerRain.json", "assets/showerRain.jpeg"],
-    "heavy intensity drizzle": ["assets/showerRain.json", "assets/showerRain.jpeg"],
+    "light intensity drizzle": [
+      "assets/showerRain.json",
+      "assets/showerRain.jpeg",
+    ],
+    "heavy intensity drizzle": [
+      "assets/showerRain.json",
+      "assets/showerRain.jpeg",
+    ],
   };
 
   String backgroundImage = "assets/clearsky.jpeg";
@@ -109,7 +125,7 @@ class _MyLocationState extends ConsumerState<MyLocation> {
     }
   }
 
-  int kelvinToCelsius(double k) {
+  int kelvinToCelsius(num k) {
     k = k - 273.15;
     return k.toInt();
   }
@@ -161,8 +177,8 @@ class _MyLocationState extends ConsumerState<MyLocation> {
       if (data.isNotEmpty) {
         final desc = data['weather'][0]['description'];
         if (weatherDiscription.containsKey(desc)) {
-          backgroundImage = weatherDiscription[desc]![1]; 
-          animation= weatherDiscription[desc]![0];
+          backgroundImage = weatherDiscription[desc]![1];
+          animation = weatherDiscription[desc]![0];
         }
       }
     });
@@ -193,22 +209,8 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                     if (_isLoading)
                       const CircularProgressIndicator()
                     else if (_output.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(_output, style: TextStyle(fontSize: 16)),
-                      )
+                       Text("")
                     else
-                      Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              locationState.locationMessage!,
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ),
-                        ],
-                      ),
                     const SizedBox(height: 20),
 
                     weatherAsync.when(
@@ -231,8 +233,15 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                               windspeed: data['wind']['speed'],
                               animation: animation,
                             ),
-
                             const SizedBox(height: 20),
+                            WeatherDetail(
+                              windSpeed: data['wind']['speed'],
+                              humidity: data['main']['humidity'],
+                              pressure: data['main']['pressure'],
+                              sunrise: data['sys']['sunrise'],
+                              sunset: data['sys']['sunset'],
+                              visibility: data['visibility'],
+                            ),
                             Button(
                               text: 'Add',
                               onPressed: () => watchList(context, data),
