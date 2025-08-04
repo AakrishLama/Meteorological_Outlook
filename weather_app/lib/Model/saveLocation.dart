@@ -7,6 +7,7 @@ class SaveLocation {
   int high;
   int low;
   String country;
+  String backgroundImage;
 
   SaveLocation({
     required this.latitude,
@@ -17,5 +18,6 @@ class SaveLocation {
     required this.low,
     required this.temp,
     required this.country,
+    required this.backgroundImage,
   });
 }

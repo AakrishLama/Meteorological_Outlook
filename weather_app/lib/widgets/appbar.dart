@@ -20,7 +20,7 @@ class Appbar extends StatelessWidget implements PreferredSizeWidget {
             heading,
             style: GoogleFonts.vollkorn(
               fontSize: 40,
-              color: Colors.black,
+              color: Colors.white,
               fontWeight: FontWeight.w600,
             )
           ),

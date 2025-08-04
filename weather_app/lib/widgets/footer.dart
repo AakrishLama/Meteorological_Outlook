@@ -27,7 +27,7 @@ class Footer extends ConsumerWidget {
       }
     }
 
-    return ClipOval(
+    return ClipRSuperellipse(
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(

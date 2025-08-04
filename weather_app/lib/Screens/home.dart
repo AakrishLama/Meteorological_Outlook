@@ -167,6 +167,7 @@ class _MyLocationState extends ConsumerState<MyLocation> {
               low: kelvinToCelsius(data['main']['temp_min']),
               temp: kelvinToCelsius(data["main"]["temp"]),
               country: data['sys']['country'],
+              backgroundImage: backgroundImage,
             ),
           );
       Fluttertoast.showToast(
@@ -212,13 +213,6 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                   children: [
                     Input(inputController: addressController, onSubmit: submit),
                     const SizedBox(height: 20),
-
-                    if (_isLoading)
-                      const CircularProgressIndicator()
-                    else if (_output.isNotEmpty)
-                      Text("")
-                    else
-                      const SizedBox(height: 20),
 
                     weatherAsync.when(
                       data: (data) {
