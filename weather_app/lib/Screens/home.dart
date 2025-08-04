@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geocoding/geocoding.dart';
 import "package:go_router/go_router.dart";
 import 'package:intl/intl.dart';
@@ -168,8 +169,14 @@ class _MyLocationState extends ConsumerState<MyLocation> {
               country: data['sys']['country'],
             ),
           );
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Location added to watchlist')),
+      Fluttertoast.showToast(
+        msg: "Location added to watchlist",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.TOP,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0,
       );
     }
 
@@ -209,9 +216,9 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                     if (_isLoading)
                       const CircularProgressIndicator()
                     else if (_output.isNotEmpty)
-                       Text("")
+                      Text("")
                     else
-                    const SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
                     weatherAsync.when(
                       data: (data) {
@@ -242,6 +249,7 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                               sunset: data['sys']['sunset'],
                               visibility: data['visibility'],
                             ),
+                            const SizedBox(height: 10),
                             Button(
                               text: 'Add',
                               onPressed: () => watchList(context, data),

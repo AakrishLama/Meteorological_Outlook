@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:weather_app/Provider/savedLocation_provider.dart';
 import 'package:weather_app/widgets/appbar.dart';
@@ -19,35 +20,42 @@ class Watchlist extends ConsumerWidget {
             child: SizedBox(
               height: MediaQuery.of(context).size.height,
               child: Center(
-                child: ListView.builder(itemCount: watchlist.length,
-                 itemBuilder: (BuildContext context, int index){
+                child: ListView.builder(
+                  itemCount: watchlist.length,
+                  itemBuilder: (BuildContext context, int index) {
                     final location = watchlist[index];
                     return Card(
                       child: ListTile(
-                        onTap: 
-                        ()=> GoRouter.of(context).go("/?latitude=${location.latitude}&longitude=${location.longitude}"),
-                        title: Text("${location.name},${location.country} ${location.temp}"),
-                        subtitle: Text("${location.description}, H:${location.high}, L:${location.low}\n click to view weather info"),
+                        onTap: () => GoRouter.of(context).go(
+                          "/?latitude=${location.latitude}&longitude=${location.longitude}",
+                        ),
+                        title: Text(
+                          "${location.name},${location.country} ${location.temp}",
+                        ),
+                        subtitle: Text(
+                          "${location.description}, H:${location.high}, L:${location.low}\n click to view weather info",
+                        ),
                         trailing: IconButton(
                           icon: const Icon(Icons.delete),
                           onPressed: () {
                             ref
                                 .read(savedLocationProvider.notifier)
                                 .removeLocation(location);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Location removed from watchlist'),
-                              ),
+                            Fluttertoast.showToast(
+                              msg: "Location added to watchlist",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.TOP,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: Colors.red,
+                              textColor: Colors.white,
+                              fontSize: 16.0,
                             );
                           },
                         ),
-
-
                       ),
                     );
-                },
-                  
-                )
+                  },
+                ),
               ),
             ),
           ),

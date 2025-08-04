@@ -1,80 +1,93 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
-import "package:google_fonts/google_fonts.dart";
+import 'package:google_fonts/google_fonts.dart';
 
-class Input extends StatelessWidget {
-  // controller for the text field
+class Input extends StatefulWidget {
   final TextEditingController inputController;
-  // callback function to be called when the user submits the input
   final VoidCallback? onSubmit;
 
   const Input({super.key, required this.inputController, this.onSubmit});
 
   @override
+  State<Input> createState() => _InputState();
+}
+
+class _InputState extends State<Input> {
+  bool _isTyping = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.inputController.addListener(() {
+      setState(() {
+        _isTyping = widget.inputController.text.isNotEmpty;
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: 400,
-      height: 70, // Slightly taller for better visual impact
-      child: TextField(
-        controller: inputController,
-        autofocus: true,
-        style: GoogleFonts.poppins(
-          fontSize: 18,
-          color: Colors.deepPurple[800],
-          fontWeight: FontWeight.w500,
-        ),
-        cursorWidth: 3,
-        cursorHeight: 24,
-        decoration: InputDecoration(
-          labelText: 'Enter city name.',
-          labelStyle: GoogleFonts.poppins(
-            color: Colors.deepPurple[300],
-            fontSize: 16,
-          ),
-          filled: true,
-          fillColor: const Color.fromARGB(255, 254, 252, 252),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(15),
-            borderSide: BorderSide.none,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(15),
-            borderSide: BorderSide(
-              color: Colors.deepPurple[100]!,
-              width: 2.5,
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide(
-              color: Colors.deepPurple[400]!,
-              width: 3,
-            ),
-          ),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 25,
-            vertical: 20,
-          ),
-          prefixIcon: Padding(
-            padding: const EdgeInsets.only(left: 15, right: 10),
-            child: Icon(
-              Icons.map_rounded,
-              color: Colors.deepPurple[300],
-              size: 24,
-            ),
-          ),
-          suffixIcon: Padding(
-            padding: const EdgeInsets.only(right: 15),
-            child: IconButton(
-              icon: Icon(
-                Icons.send_rounded,
-                color: Colors.deepPurple[400],
-                size: 28,
+      height: 70,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Colors.black.withOpacity(0.3),
+                width: 1.5,
               ),
-              onPressed: onSubmit,
+            ),
+            child: TextField(
+              controller: widget.inputController,
+              autofocus: true,
+              style: GoogleFonts.poppins(
+                fontSize: 18,
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+              ),
+              cursorWidth: 3,
+              cursorHeight: 24,
+              decoration: InputDecoration(
+                hintText: _isTyping ? '' : 'Enter city name',
+                hintStyle: GoogleFonts.poppins(
+                  color: Colors.black.withOpacity(0.7),
+                  fontSize: 21,
+                ),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 25,
+                  vertical: 20,
+                ),
+                prefixIcon: Padding(
+                  padding: const EdgeInsets.only(left: 15, right: 10),
+                  child: Icon(
+                    Icons.map_rounded,
+                    color: Colors.black.withOpacity(0.7),
+                    size: 28,
+                  ),
+                ),
+                suffixIcon: Padding(
+                  padding: const EdgeInsets.only(right: 15),
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.send_rounded,
+                      color: Colors.black.withOpacity(0.9),
+                      size: 28,
+                    ),
+                    onPressed: widget.onSubmit,
+                  ),
+                ),
+              ),
+              onSubmitted: (_) => widget.onSubmit?.call(),
             ),
           ),
         ),
-        onSubmitted: (_) => onSubmit!(),
       ),
     );
   }
