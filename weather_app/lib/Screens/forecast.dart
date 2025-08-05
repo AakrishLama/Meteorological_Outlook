@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -97,7 +98,7 @@ class _WeatherState extends ConsumerState<Weather> {
         'lat': lat.toString(),
         'lon': lon.toString(),
         'appid': api,
-        'units': 'metric', 
+        'units': 'metric',
       });
 
       final response = await http.get(url).timeout(const Duration(seconds: 10));
@@ -168,106 +169,145 @@ class _WeatherState extends ConsumerState<Weather> {
 
   @override
   Widget build(BuildContext context) {
+    // Pick the first day's description if available
+    final bgDescription = dailyWeather.isNotEmpty
+        ? dailyWeather[0].description.toLowerCase()
+        : 'clear sky';
+
+    final bgImage =
+        weatherDiscription[bgDescription]?.last ?? 'assets/default.jpeg';
+
     return Theme(
       data: ThemeData.dark(),
-      child: Scaffold(
-        appBar: Appbar(heading: 'Weather'),
-        body: weatherInfo == null
-            ? const Center(child: CircularProgressIndicator())
-            : dailyWeather.isEmpty
-            ? const Center(child: Text("No forecast data available."))
-            : ListView.builder(
-                itemCount: dailyWeather.length,
-                itemBuilder: (context, index) {
-                  final day = dailyWeather[index];
-                  final forecasts = day.forecasts;
-      
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12.0,
-                      horizontal: 16.0,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${day.day}, ${day.date}',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+      child: Stack(
+        children: [
+          Positioned.fill(child: Image.asset(bgImage, fit: BoxFit.cover)),
+          Scaffold(
+            backgroundColor: Colors.transparent, //  image shows through
+            appBar: Appbar(heading: 'Weather'),
+            body: weatherInfo == null
+                ? const Center(child: CircularProgressIndicator())
+                : dailyWeather.isEmpty
+                ? const Center(child: Text("No forecast data available."))
+                : ListView.builder(
+                    itemCount: dailyWeather.length,
+                    itemBuilder: (context, index) {
+                      final day = dailyWeather[index];
+                      final forecasts = day.forecasts;
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 12.0,
+                          horizontal: 16.0,
                         ),
-                        const SizedBox(height: 8),
-                        SizedBox(
-                          height: 150,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: forecasts.length,
-                            itemBuilder: (context, forecastIndex) {
-                              final forecast = forecasts[forecastIndex];
-                              final time = forecast['dt_txt']
-                                  .split(' ')[1]
-                                  .substring(0, 5);
-                              final description =
-                                  forecast['weather'][0]['description']
-                                      .toString()
-                                      .toLowerCase();
-      
-                              // Get JSON animation file, fallback to default if missing
-                              final jsonFile =
-                                  weatherDiscription[description]?.first ??
-                                  'assets/clearsky.json';
-      
-                              final temp = (forecast['main']['temp'] as num)
-                                  .toDouble();
-      
-                              return Container(
-                                width: 120,
-                                margin: const EdgeInsets.only(right: 12),
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade200,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      time,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${day.day}, ${day.date}',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            SizedBox(
+                              height: 150,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: forecasts.length,
+                                itemBuilder: (context, forecastIndex) {
+                                  final forecast = forecasts[forecastIndex];
+                                  final time = forecast['dt_txt']
+                                      .split(' ')[1]
+                                      .substring(0, 5);
+                                  final description =
+                                      forecast['weather'][0]['description']
+                                          .toString()
+                                          .toLowerCase();
+
+                                  final jsonFile =
+                                      weatherDiscription[description]?.first ??
+                                      'assets/clearsky.json';
+
+                                  final temp = (forecast['main']['temp'] as num)
+                                      .toDouble();
+
+                                  return ClipRRect(
+                                    borderRadius: BorderRadius.circular(16),
+                                    child: BackdropFilter(
+                                      filter: ImageFilter.blur(
+                                        sigmaX: 10,
+                                        sigmaY: 10,
+                                      ),
+                                      child: Container(
+                                        width: 120,
+                                        margin: const EdgeInsets.only(
+                                          right: 12,
+                                        ),
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color: Colors.black.withOpacity(0.3),
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
+                                          border: Border.all(
+                                            color: Colors.white.withOpacity(
+                                              0.3,
+                                            ),
+                                          ),
+                                        ),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              time,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 60,
+                                              height: 60,
+                                              child: Lottie.asset(
+                                                jsonFile,
+                                                fit: BoxFit.contain,
+                                              ),
+                                            ),
+                                            Text(
+                                              '${temp.toStringAsFixed(1)}°C',
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                            Text(
+                                              description,
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                    SizedBox(
-                                      width: 80,
-                                      height: 80,
-                                      child: Lottie.asset(
-                                        jsonFile,
-                                        fit: BoxFit.contain,
-                                      ),
-                                    ),
-                                    Text(
-                                      '${temp.toStringAsFixed(1)}°C',
-                                      style: const TextStyle(fontSize: 14, color: Colors.black),
-                                    ),
-                                    Text(
-                                      description,
-                                      textAlign: TextAlign.center,
-                                      style: const TextStyle(fontSize: 10, color: Colors.black),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-        bottomNavigationBar: const Footer(null, null),
+                      );
+                    },
+                  ),
+            bottomNavigationBar: const Footer(null, null),
+          ),
+        ],
       ),
     );
   }
