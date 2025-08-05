@@ -23,6 +23,7 @@ class Watchlist extends ConsumerWidget {
                 height: MediaQuery.of(context).size.height,
                 child: Center(
                   child: ListView.builder(
+                    padding: const EdgeInsets.only(bottom: 700),
                     itemCount: watchlist.length,
                     itemBuilder: (BuildContext context, int index) {
                       final location = watchlist[index];
