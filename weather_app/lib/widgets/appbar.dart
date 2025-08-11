@@ -20,11 +20,10 @@ class Appbar extends StatelessWidget implements PreferredSizeWidget {
         );
        },
       child: ClipRRect(
-        // Optional: to prevent blur bleed
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10), // Blur strength
           child: AppBar(
-            backgroundColor: Colors.white.withOpacity(0), // Frosted look
+            backgroundColor: Colors.white.withOpacity(0), 
             elevation: 1,
             centerTitle: true,
             title: Text(

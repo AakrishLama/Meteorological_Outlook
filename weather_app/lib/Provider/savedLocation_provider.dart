@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:weather_app/Model/saveLocation.dart';
 
 class SavedLocationProvider extends StateNotifier<List<SaveLocation>> {
+  // hard coded locations for demo in the watchlist.
   SavedLocationProvider()
     : super([
         SaveLocation(

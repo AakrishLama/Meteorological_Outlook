@@ -16,18 +16,19 @@ class Footer extends ConsumerWidget {
     final locationState = ref.watch(locationProvider);
 
     void goToWeatherInfo(BuildContext context) {
-      final latitude = locationState.latitude;
-      final longitude = locationState.longitude;
+      final latitude = inputLat ?? locationState.latitude;
+      final longitude = inputLong ?? locationState.longitude;
 
       if (latitude != null && longitude != null) {
         GoRouter.of(
           context,
         ).go("/weatherInfo?latitude=$latitude&longitude=$longitude");
-        print("get weather info button pressed $latitude $longitude");
+        // log("get weather info button pressed $latitude $longitude");
       }
     }
 
-    return ClipRSuperellipse(
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
@@ -53,12 +54,12 @@ class Footer extends ConsumerWidget {
                     onPressed: () => GoRouter.of(context).go("/"),
                     icon: Icons.home,
                   ),
-                  if (locationState.latitude != null &&
-                      locationState.longitude != null)
+                  if ((inputLat ?? locationState.latitude) != null &&
+                      (inputLong ?? locationState.longitude) != null)
                     Button(
                       text: "Forecast",
                       onPressed: () => goToWeatherInfo(context),
-                      icon: Icons.cloud
+                      icon: Icons.cloud,
                     )
                   else
                     Opacity(
@@ -68,7 +69,6 @@ class Footer extends ConsumerWidget {
                   Button(
                     text: 'About',
                     onPressed: () => GoRouter.of(context).go("/about"),
-
                   ),
                   Button(
                     onPressed: () => GoRouter.of(context).go("/watchlist"),
@@ -77,7 +77,6 @@ class Footer extends ConsumerWidget {
                   ),
                 ],
               ),
-
               const SizedBox(height: 10),
             ],
           ),

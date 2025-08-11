@@ -245,7 +245,7 @@ class _MyLocationState extends ConsumerState<MyLocation> {
                             ),
                             const SizedBox(height: 10),
                             Button(
-                              text: 'Add',
+                              text: 'Add to watchList',
                               onPressed: () => watchList(context, data),
                               icon: Icons.add,
                             ),

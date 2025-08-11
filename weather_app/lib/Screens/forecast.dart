@@ -7,7 +7,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:lottie/lottie.dart'; // Import Lottie package
+import 'package:lottie/lottie.dart'; 
 import 'package:weather_app/Model/dailyForecast.dart';
 import 'package:weather_app/Provider/Location_provider.dart';
 import 'package:weather_app/widgets/appbar.dart';

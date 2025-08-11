@@ -127,7 +127,6 @@ class _WatchlistState extends ConsumerState<Watchlist> with TickerProviderStateM
                 );
               },
             ),
-            // Sticky footer
             Positioned(bottom: 0, left: 0, right: 0, child: Footer(null, null)),
           ],
         ),
